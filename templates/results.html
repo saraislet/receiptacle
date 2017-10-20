@@ -4,18 +4,15 @@
 <div class="w3-container">
 	<h2>Receipts:</h2>
 	{% if show_results %}
-		<p>
-			{{results}}
-		</p>
-	{% endif %}
-	{% for result in results %}
-    	<div class="w3-container w3-card-4 w3-pale-red w3-margin w3-padding" style="max-width:800px;">
-    		<a href="https://www.twitter.com/{{result.screen_name}}">
-	    		<b>{{result.name}}</b><br>
-	    		<font color="#657786">@{{result.screen_name}}</font><br>
-    		</a>
-    		{{result.contents_text}}
-    	</div>
-	{% endfor %}
+  	{% for result in results %}
+      	<div class="w3-container w3-card-4 w3-pale-red w3-margin w3-padding" style="max-width:800px;">
+      		<a href="https://www.twitter.com/{{result.screen_name}}">
+  	    		<b>{{result.name}}</b><br>
+  	    		<font color="#657786">@{{result.screen_name}}</font><br>
+      		</a>
+      		{{result.contents_text}}
+      	</div>
+  	{% endfor %}
+  {% endif %}
 </div>
 {% endblock %}
