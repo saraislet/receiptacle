@@ -6,6 +6,23 @@
   <small>
     (<a href="https://young-meadow-72614.herokuapp.com/receipts_json">JSON</a>)
   </small>
+
+
+  <div class="w3-container">
+    <form action="/search" method="POST" class="w3-container">
+      <label class="w3-margin">Twitter @ name to search:</label>
+      <input type="text" name="user_searched" class="w3-input w3-border w3-light-grey w3-margin">
+      <input type="submit" name="my-form" value="Search" class="w3-btn cobalt w3-margin">
+    </form>
+  </div>
+
+  {% if show_search_name %}
+    Searched for @{{user_searched}}:
+  {% endif %}
+  {% if show_error %}
+    <p>{{error_msg}}</p>
+  {% endif %}
+
 	{% if show_results %}
   	{% for result in results %}
       	<div class="w3-container w3-card-4 w3-pale-red w3-margin w3-padding" style="max-width:800px;">

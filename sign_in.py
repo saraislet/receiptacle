@@ -144,8 +144,7 @@ def receipts():
     return flask.render_template('results.html', 
                              results = receipts,
                              num_results = len(receipts),
-                             show_results = show_results,
-                             logged_in = True)
+                             show_results = show_results)
 
 
 @app.route("/receipts_json")
@@ -168,23 +167,12 @@ def receipts_json():
                 print("User searched is in the database.")
                 
     except BaseException as e:
-        print("Error in receipts()", e)    
-    
-    # Don't show list of results if there aren't any.
-#    if len(receipts) > 0:
-#        show_results = True
-#    else:
-#        show_results = False
-    
+        print("Error in receipts_json()", e)    
+       
     results = {}
     results["receipts"] = receipts
-    return json.dumps(results, indent = 4, ensure_ascii = False)
     
-#    return flask.render_template('results.html', 
-#                             results = receipts,
-#                             num_results = len(receipts),
-#                             show_results = show_results,
-#                             logged_in = True)
+    return json.dumps(results, indent = 4, ensure_ascii = False)
 
 
 @app.route('/search', methods=['POST'])
@@ -199,6 +187,7 @@ def search_user():
         # TODO: add parsing to identify user from twitter URLs (see NaziBlockBot)
         # TODO: add error handling here if user enters bad URL
         user_searched = re.sub(r"@","",user_searched)
+        show_search_name = True
         
         try:    
             with connection.cursor() as cursor:
@@ -209,16 +198,21 @@ def search_user():
                 
                 # If a matching record exists, return result, otherwise return message.
                 if results == []:
-                    print("User searched is not in the database.")
+                    error_msg = "User searched is not in the database."
+                    print(error_msg)
+                    show_error = True
+                    show_results = False
                 else:
                     print("User searched is in the database.")
                     
         except BaseException as e:
-            print("Error in add_account()", e)
+            print("Error in search_user()", e)
 
     else: 
+        show_search_name = False
+       
         # Get most recent 20 receipts from db.
-        results = []
+        receipts = []
         try:
             with connection.cursor() as cursor:
                 # Read 20 records
@@ -227,21 +221,23 @@ def search_user():
                 results = cursor.fetchall()
                     
         except BaseException as e:
-            print("Error in add_account()", e)
+            print("Error in search_user()", e)
     
     
     # Don't show list of results if there aren't any.
-    if results.len > 0:
+    if len(receipts) > 0:
         show_results = True
     else:
         show_results = False
     
     return flask.render_template('results.html', 
                              user_searched = user_searched,
-                             results = results.scores,
-                             num_results = results.len,
+                             results = receipts,
+                             num_results = len(receipts),
                              show_results = show_results,
-                             logged_in = True)
+                             show_error = show_error,
+                             error_msg = error_msg,
+                             show_search_name = show_search_name)
 
     
 
