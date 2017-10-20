@@ -184,6 +184,7 @@ def search_user():
     
     receipts = []
     show_error = False
+    error_msg = ""
     
     if user_searched != None and user_searched != "":
         # Remove @ from username, if it exists.
