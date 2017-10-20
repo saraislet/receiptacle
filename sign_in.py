@@ -26,7 +26,7 @@ def db_connect():
     connection = pymysql.connect(host = os.environ['host'],
                                  user = os.environ['user'],
                                  password = os.environ['password'],
-                                 db = os.environ['db'],
+                                 db = os.environ['database'],
                                  charset = 'utf8mb4',
                                  cursorclass = pymysql.cursors.DictCursor)
     
