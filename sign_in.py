@@ -9,7 +9,7 @@ import os, re
 from flask import Flask, request, render_template, redirect, session
 import flask
 import tweepy
-import pymysql.cursors
+import PyMySQL.cursors
 #import Sturmtest as st
 #import config_local as config
 
@@ -23,12 +23,12 @@ callback_url = 'https://murmuring-wildwood-21076.herokuapp.com/verify'
 
 def db_connect():
     # Connect to the database
-    connection = pymysql.connect(host = os.environ['host'],
+    connection = PyMySQL.connect(host = os.environ['host'],
                                  user = os.environ['user'],
                                  password = os.environ['password'],
                                  db = os.environ['db'],
                                  charset = 'utf8mb4',
-                                 cursorclass = pymysql.cursors.DictCursor)
+                                 cursorclass = PyMySQL.cursors.DictCursor)
     
     return connection    
 
