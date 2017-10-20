@@ -179,7 +179,7 @@ def receipts_json():
 def search_user():
     
     connection = db_connect()
-    user_searched = request.form['screen_name']
+    user_searched = request.form['search_user']
     results = []
     
     if user_searched != None and user_searched != "":
