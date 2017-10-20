@@ -137,8 +137,9 @@ def receipts():
     else:
         show_results = False
     
-    dict["receipts"] = receipts
-    return json.dumps(dict, ensure_ascii = False)
+    results = {}
+    results["receipts"] = receipts
+    return json.dumps(results, ensure_ascii = False)
     
 #    return flask.render_template('results.html', 
 #                             results = receipts,
