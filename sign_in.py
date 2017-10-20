@@ -112,50 +112,24 @@ def get_verification():
 @app.route("/receipts")
 def receipts():
     
-    api_user = get_api()
     connection = db_connect()
-    
-    if api_user == None:
-        return flask.render_template('error.html')
-    
-    user_searched = request.form['screen_name']
     results = []
     
-    if user_searched != None and user_searched != "":
-        # Remove @ from username, if it exists.
-        # TODO: add parsing to identify user from twitter URLs (see NaziBlockBot)
-        # TODO: add error handling here if user enters bad URL
-        user_searched = re.sub(r"@","",user_searched)
-        
-        try:    
-            with connection.cursor() as cursor:
-                # Read a single record
-                sql = "SELECT * FROM `receipts` LIMIT 20"
-                cursor.execute(sql,)
-                results = cursor.fetchall()
+    try:    
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM `receipts` LIMIT 20"
+            cursor.execute(sql,)
+            results = cursor.fetchall()
+            
+            # If a matching record exists, return result, otherwise return message.
+            if results == []:
+                print("Results array is empty. Something went wrong.")
+            else:
+                print("User searched is in the database.")
                 
-                # If a matching record exists, return result, otherwise return message.
-                if results == []:
-                    print("Results array is empty. Something went wrong.")
-                else:
-                    print("User searched is in the database.")
-                    
-        except BaseException as e:
-            print("Error in add_account()", e)
-
-    else: 
-        # Get most recent 20 receipts from db.
-        results = []
-        try:
-            with connection.cursor() as cursor:
-                # Read 20 records
-                sql = "SELECT * FROM `receipts` LIMIT 20"
-                cursor.execute(sql,)
-                results = cursor.fetchall()
-                    
-        except BaseException as e:
-            print("Error in add_account()", e)
-    
+    except BaseException as e:
+        print("Error in add_account()", e)    
     
     # Don't show list of results if there aren't any.
     if results.len > 0:
@@ -164,7 +138,6 @@ def receipts():
         show_results = False
     
     return flask.render_template('results.html', 
-                             user_searched = user_searched,
                              results = results.scores,
                              num_results = results.len,
                              show_results = show_results,
@@ -174,12 +147,7 @@ def receipts():
 @app.route('/search', methods=['POST'])
 def search_user():
     
-    api_user = get_api()
     connection = db_connect()
-    
-    if api_user == None:
-        return flask.render_template('error.html')
-    
     user_searched = request.form['screen_name']
     results = []
     
