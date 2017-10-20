@@ -207,6 +207,7 @@ def search_user():
                     show_error = True
                 else:
                     print("User searched is in the database.")
+                    print(receipts)
                     
         except BaseException as e:
             print("Error in search_user()", e)
