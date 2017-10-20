@@ -129,17 +129,17 @@ def receipts():
                 print("User searched is in the database.")
                 
     except BaseException as e:
-        print("Error in add_account()", e)    
+        print("Error in receipts()", e)    
     
     # Don't show list of results if there aren't any.
-    if results.len > 0:
+    if len(results) > 0:
         show_results = True
     else:
         show_results = False
     
     return flask.render_template('results.html', 
-                             results = results.scores,
-                             num_results = results.len,
+                             results = results,
+                             num_results = len(results),
                              show_results = show_results,
                              logged_in = True)
 
