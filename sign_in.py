@@ -199,10 +199,9 @@ def search_user():
                 sql = "SELECT * FROM `receipts` WHERE `screen_name`=%s LIMIT 20"
                 cursor.execute(sql, (user_searched,))
                 receipts = cursor.fetchall()
-                print(len(receipts))
-                print(receipts.type)
+
                 # If a matching record exists, return result, otherwise return message.
-                if receipts == []:
+                if len(receipts) == 0:
                     error_msg = "User searched is not in the database."
                     print(error_msg)
                     show_error = True
