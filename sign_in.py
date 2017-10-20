@@ -180,7 +180,8 @@ def search_user():
     
     connection = db_connect()
     user_searched = request.form['search_user']
-    results = []
+    print("Searching for user " + user_searched)
+    receipts = []
     
     if user_searched != None and user_searched != "":
         # Remove @ from username, if it exists.
@@ -194,10 +195,10 @@ def search_user():
                 # Read a single record
                 sql = "SELECT * FROM `receipts` WHERE `screen_name`=%s LIMIT 20"
                 cursor.execute(sql, (user_searched,))
-                results = cursor.fetchall()
+                receipts = cursor.fetchall()
                 
                 # If a matching record exists, return result, otherwise return message.
-                if results == []:
+                if receipts == []:
                     error_msg = "User searched is not in the database."
                     print(error_msg)
                     show_error = True
@@ -218,7 +219,7 @@ def search_user():
                 # Read 20 records
                 sql = "SELECT * FROM `receipts` LIMIT 20"
                 cursor.execute(sql,)
-                results = cursor.fetchall()
+                receipts = cursor.fetchall()
                     
         except BaseException as e:
             print("Error in search_user()", e)
