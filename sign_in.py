@@ -137,6 +137,45 @@ def receipts():
     else:
         show_results = False
     
+#    results = {}
+#    results["receipts"] = receipts
+#    return json.dumps(results, ensure_ascii = False)
+    
+    return flask.render_template('results.html', 
+                             results = receipts,
+                             num_results = len(receipts),
+                             show_results = show_results,
+                             logged_in = True)
+
+
+@app.route("/receipts_json")
+def receipts_json():
+    
+    connection = db_connect()
+    receipts = []
+    
+    try:    
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM `receipts` LIMIT 20"
+            cursor.execute(sql,)
+            receipts = cursor.fetchall()
+            
+            # If a matching record exists, return result, otherwise return message.
+            if receipts == []:
+                print("Results array is empty. Something went wrong.")
+            else:
+                print("User searched is in the database.")
+                
+    except BaseException as e:
+        print("Error in receipts()", e)    
+    
+    # Don't show list of results if there aren't any.
+    if len(receipts) > 0:
+        show_results = True
+    else:
+        show_results = False
+    
     results = {}
     results["receipts"] = receipts
     return json.dumps(results, ensure_ascii = False)
