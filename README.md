@@ -6,9 +6,10 @@ I want to make accountable blocklists easy by allowing users to look up evidence
 
 One simple application of this receipts database would be allowing users to DM a bot, include an @$bot_screen_name in a reply, or quote-tweet to have the bot block the indicated user and store the indicated tweet as a receipt for why that user was blocked. Any blocklist could take advantage of such a tool.
 
+## Prototype
+Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com/receipts
+Raw JSON: https://young-meadow-72614.herokuapp.com/receipts_json
+
 ## TODO:
-* Build SQL database.
-  * Build manual input of receipt.
-  * Test receipts.
-* Build basic bot actions.
-  * Test bot receipts.
+* Test front-end
+* Plan additional features for CRUD MVP
