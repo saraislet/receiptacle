@@ -126,7 +126,7 @@ def receipts():
             if receipts == []:
                 print("Results array is empty. Something went wrong.")
             else:
-                print("User searched is in the database.")
+                print("Returning receipts in array.")
                 
     except BaseException as e:
         print("Error in receipts()", e)    
@@ -164,7 +164,7 @@ def receipts_json():
             if receipts == []:
                 print("Results array is empty. Something went wrong.")
             else:
-                print("User searched is in the database.")
+                print("Returning JSON.")
                 
     except BaseException as e:
         print("Error in receipts_json()", e)    
