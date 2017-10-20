@@ -9,7 +9,7 @@ import os, re
 from flask import Flask, request, render_template, redirect, session
 import flask
 import tweepy
-import PyMySQL.cursors
+import pymysql.cursors
 #import Sturmtest as st
 #import config_local as config
 
@@ -23,12 +23,12 @@ callback_url = 'https://murmuring-wildwood-21076.herokuapp.com/verify'
 
 def db_connect():
     # Connect to the database
-    connection = PyMySQL.connect(host = os.environ['host'],
+    connection = pymysql.connect(host = os.environ['host'],
                                  user = os.environ['user'],
                                  password = os.environ['password'],
                                  db = os.environ['db'],
                                  charset = 'utf8mb4',
-                                 cursorclass = PyMySQL.cursors.DictCursor)
+                                 cursorclass = pymysql.cursors.DictCursor)
     
     return connection    
 
@@ -302,7 +302,8 @@ def logout():
 
 if __name__ == '__main__':
     app.debug = True
+    app.secret_key = '\n\x8d-\xd1"\xfa;EG`\xc1?|\xd5*\xeaO\x91\x0c\x0c\x1as\x1e<'
+#    app.config['SESSION_TYPE'] = 'filesystem'
     app.run()
     
-app.secret_key = '\n\x8d-\xd1"\xfa;EG`\xc1?|\xd5*\xeaO\x91\x0c\x0c\x1as\x1e<'
 # TODO: put a new random string in .env and update heroku env
