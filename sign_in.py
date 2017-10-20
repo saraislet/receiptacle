@@ -118,7 +118,7 @@ def receipts():
     try:    
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT * FROM `receipts` LIMIT 20"
+            sql = "SELECT * FROM `receipts` ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql,)
             receipts = cursor.fetchall()
             
