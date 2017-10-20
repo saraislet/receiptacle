@@ -2,25 +2,19 @@
 {% block body %}
  
 <div class="w3-container">
-	<h2>Sturmjäger tested @{{user}}:</h2>
-	<p>
-		{{results}}
-	</p>
-	<p>
-		{{ratio}}% identified as Nazis ({{num_baddies}} of {{num_results}}).
-	</p>
-	{% if show_baddies %}
+	<h2>Receipts:</h2>
+	{% if show_results %}
 		<p>
-			{{baddies_names}}
+			{{results}}
 		</p>
 	{% endif %}
-	{% for user in baddies %}
+	{% for result in results %}
     	<div class="w3-container w3-card-4 w3-pale-red w3-margin w3-padding" style="max-width:800px;">
-    		<a href="https://www.twitter.com/{{user.screen_name}}">
-	    		<b>{{user.name}}</b><br>
-	    		<font color="#657786">@{{user.screen_name}}</font><br>
+    		<a href="https://www.twitter.com/{{result.screen_name}}">
+	    		<b>{{result.name}}</b><br>
+	    		<font color="#657786">@{{result.screen_name}}</font><br>
     		</a>
-    		{{user.description}}
+    		{{result.description}}
     	</div>
 	{% endfor %}
 </div>

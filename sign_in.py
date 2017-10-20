@@ -11,7 +11,7 @@ import flask
 import tweepy
 import pymysql.cursors
 #import Sturmtest as st
-import config_local as config
+#import config_local as config
 
 app = Flask(__name__)
 
