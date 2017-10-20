@@ -171,14 +171,14 @@ def receipts_json():
         print("Error in receipts()", e)    
     
     # Don't show list of results if there aren't any.
-    if len(receipts) > 0:
-        show_results = True
-    else:
-        show_results = False
+#    if len(receipts) > 0:
+#        show_results = True
+#    else:
+#        show_results = False
     
     results = {}
     results["receipts"] = receipts
-    return json.dumps(results, ensure_ascii = False)
+    return json.dumps(results, indent = 4, ensure_ascii = False)
     
 #    return flask.render_template('results.html', 
 #                             results = receipts,
