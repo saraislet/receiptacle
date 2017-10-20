@@ -181,7 +181,9 @@ def search_user():
     connection = db_connect()
     user_searched = request.form['search_user']
     print("Searching for user " + user_searched)
+    
     receipts = []
+    show_error = False
     
     if user_searched != None and user_searched != "":
         # Remove @ from username, if it exists.
@@ -202,7 +204,6 @@ def search_user():
                     error_msg = "User searched is not in the database."
                     print(error_msg)
                     show_error = True
-                    show_results = False
                 else:
                     print("User searched is in the database.")
                     
