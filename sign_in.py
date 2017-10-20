@@ -168,7 +168,11 @@ def receipts_json():
                 
     except BaseException as e:
         print("Error in receipts_json()", e)    
-       
+    
+    for receipt in receipts:
+        receipt.date_of_tweet = receipt.date_of_tweet.isoformat()
+        receipt.date_added = receipt.date_added.isoformat()
+    
     results = {}
     results["receipts"] = receipts
     
