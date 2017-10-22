@@ -123,7 +123,7 @@ def receipts():
             receipts = cursor.fetchall()
             
             # If a matching record exists, return result, otherwise return message.
-            if receipts == []:
+            if len(receipts) == 0:
                 print("Results array is empty. Something went wrong.")
             else:
                 print("Returning receipts in array.")
@@ -137,6 +137,9 @@ def receipts():
     else:
         show_results = False
     
+    
+    
+#    print(receipts.encode("utf-8"))
 #    results = {}
 #    results["receipts"] = receipts
 #    return json.dumps(results, ensure_ascii = False)
@@ -145,7 +148,7 @@ def receipts():
                              results = receipts,
                              num_results = len(receipts),
                              show_results = show_results)
-
+    
 
 @app.route("/receipts_json")
 def receipts_json():
@@ -161,7 +164,7 @@ def receipts_json():
             receipts = cursor.fetchall()
             
             # If a matching record exists, return result, otherwise return message.
-            if receipts == []:
+            if len(receipts) == 0:
                 print("Results array is empty. Something went wrong.")
             else:
                 print("Returning JSON.")
@@ -170,8 +173,10 @@ def receipts_json():
         print("Error in receipts_json()", e)    
     
     for receipt in receipts:
-        receipt.date_of_tweet = receipt.date_of_tweet.isoformat()
-        receipt.date_added = receipt.date_added.isoformat()
+        if "date_of_tweet" in receipt and receipt["date_of_tweet"] != None:
+            receipt["date_of_tweet"] = receipt["date_of_tweet"].isoformat()
+        if "date_added" in receipt and receipt["date_added"] != None:
+            receipt["date_added"] = receipt["date_added"].isoformat()
     
     results = {}
     results["receipts"] = receipts
