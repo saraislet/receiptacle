@@ -24,27 +24,33 @@
   {% endif %}
 
   {% if show_results %}
-  <table>
-    <tr>
-      <td>Name</td>
-      <td>Receipt</td>
-      <td>Date</td>
-      <td>Blocklist ID</td>
-    </tr>
-    {% for result in results %}
-      <tr>
-        <td>
-          {{result.name}} <br> 
-          <a href="https://www.twitter.com/{{result.screen_name}}">
-            <font color="#657786">@{{result.screen_name}}</font>
-          </a>
-        </td>
-        <td>{{result.contents_text}}</td>
-        <td>{{result.date_of_tweet}}</td>
-        <td>{{result.blocklist_id}}</td>
-      </tr>
-    {% endfor %}
-  </table>
+  <div class="w3-responsive">
+    <table class="w3-table-all">
+      <thead>
+        <tr class="w3-light-grey">
+          <th>Name</th>
+          <th>Receipt</th>
+          <th width="14em">Date</th>
+          <th>Blocklist ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for result in results %}
+          <tr>
+            <td>
+              {{result.name}} <br> 
+              <a href="https://www.twitter.com/{{result.screen_name}}">
+                <font color="#657786">@{{result.screen_name}}</font>
+              </a>
+            </td>
+            <td>{{result.contents_text}}</td>
+            <td>{{result.date_of_tweet}}</td>
+            <td>{{result.blocklist_id}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
   <!-- {{results}} -->
 </div>
