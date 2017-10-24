@@ -189,12 +189,23 @@ def receipts_json():
     return json.dumps(results, indent = 4, ensure_ascii = False)
 
 
+@app.route("/search/<string:name>/")
+def search_user_url(name):
+    print("Searching for user @" + name)
+    return search_user(name)
+
+
 @app.route('/search', methods=['POST'])
-def search_user():
+def search_user_form():
+    user_searched = request.form['search_user']
+    print("Searching for user @" + user_searched)
+    return search_user(user_searched)
+
+def search_user(user_searched):
     
     connection = db_connect()
-    user_searched = request.form['search_user']
-    print("Searching for user " + user_searched)
+#    user_searched = request.form['search_user']
+#    print("Searching for user @" + user_searched)
     
     receipts = []
     show_error = False
