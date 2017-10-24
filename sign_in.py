@@ -7,7 +7,7 @@ Created on Tue Sep 12 20:12:44 2017
 
 import os, re, json
 from flask import Flask, request, render_template, redirect, session
-import flask
+#import flask
 import tweepy
 import pymysql.cursors
 #import Sturmtest as st
@@ -149,7 +149,7 @@ def receipts():
 #    results["receipts"] = receipts
 #    return json.dumps(results, ensure_ascii = False)
     
-    return flask.render_template('results_table.html', 
+    return render_template('results_table.html', 
                              results = receipts,
                              num_results = len(receipts),
                              show_results = show_results)
@@ -259,7 +259,7 @@ def search_user(user_searched):
     else:
         show_results = False
     
-    return flask.render_template('results_table.html', 
+    return render_template('results_table.html', 
                              user_searched = user_searched,
                              results = receipts,
                              num_results = len(receipts),
@@ -277,7 +277,7 @@ def main():
     userdata_json = session['userdata']
     
         
-    return flask.render_template('app.html', 
+    return render_template('app.html', 
                                  logged_in = True,
                                  name = userdata_json['name'],
                                  followers_count = userdata_json['followers_count'])
