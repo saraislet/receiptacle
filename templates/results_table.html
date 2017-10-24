@@ -11,8 +11,10 @@
   <div class="w3-container">
     <form action="/search" method="POST" class="w3-container">
       <label class="w3-margin">Twitter @ name to search:</label>
-      <input type="text" name="search_user" class="w3-input w3-border w3-light-grey w3-margin" style="width: 16em">
-      <input type="submit" name="my-form" value="Search" class="w3-btn cobalt w3-margin">
+      <div class="w3-container">
+        <input type="text" name="search_user" class="w3-input w3-border w3-light-grey w3-margin" style="width: 16em; float:left">
+        <input type="submit" name="my-form" value="Search" class="w3-btn cobalt w3-margin">
+      </div>
     </form>
   </div>
 
@@ -25,7 +27,7 @@
 
   {% if show_results %}
   <div class="w3-responsive">
-    <table class="w3-table-all">
+    <table class="w3-table-all w3-hoverable">
       <thead>
         <tr class="w3-light-grey">
           <th>Name</th>

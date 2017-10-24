@@ -8,14 +8,14 @@ a {
 	/*border-bottom: dotted 1px rgba(128, 128, 128, 0.75);*/
 	outline: 0;
 }
-    a:hover {
-		color: #886785; 
-		transition: color 0.2s ease-in-out;
-		/*border-bottom-color: rgba(255, 255, 255, 0);*/
-    }
+  a:hover {
+  	color: #886785; 
+  	transition: color 0.2s ease-in-out;
+  	/*border-bottom-color: rgba(255, 255, 255, 0);*/
+  }
 
 w3-btn {
-	/*transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;*/
+	transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 	color:#fff!important;
 	background-color:#5555BB!important;
 }
@@ -27,15 +27,15 @@ w3-btn {
 	}
 
 .cobalt,.hover-cobalt:hover {
-    color:#fff!important;
-    background-color:#5555BB!important;
-    transition: background-color 0.2s ease-in-out;
+  color:#fff!important;
+  background-color:#5555BB!important;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .charcoal,.hover-charcoal:hover {
-    color:#fff!important;
-    background-color:#37333B!important;
-    transition: background-color 0.2s ease-in-out;
+  color:#fff!important;
+  background-color:#37333B!important;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .error {
@@ -50,7 +50,12 @@ w3-btn {
 }
 
 .subtle,.hover-subtle:hover {
-    color:#fff!important;
-    background-color:#886785!important;
-    transition: background-color 0.2s ease-in-out;
+  color:#fff!important;
+  background-color:#886785!important;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.w3-input:hover {
+  border-color:#f9cccc!important;
+  background-color:#f6f6f6!important;
 }
