@@ -248,7 +248,7 @@ def search_user():
     else:
         show_results = False
     
-    return flask.render_template('results.html', 
+    return flask.render_template('results_table.html', 
                              user_searched = user_searched,
                              results = receipts,
                              num_results = len(receipts),
