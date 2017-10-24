@@ -49,64 +49,69 @@ def get_api():
 
 
 @app.route('/')
-def send_token():
-    redirect_url = ""
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
-#    redirect_url = auth.get_authorization_url()
-
-    try: 
-        #get the request tokens
-        redirect_url= auth.get_authorization_url()
-        session['request_token'] = auth.request_token
-        
-        return render_template('start.html', redirect_url = redirect_url)
-    except tweepy.TweepError:
-        error_msg = 'Error! Failed to get request token'
-        print(error_msg)
-        
-        # TODO: Ideally, this would return an error message. Test this.
-        return flask.render_template('error.html',
-                                     error_msg = error_msg)
+def temporary_redirect():
+    return redirect("/receipts_table", code=302)
 
 
-@app.route("/verify")
-def get_verification():
-    # Get the verifier key from the request url.
-    verifier = request.args['oauth_verifier']
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    print("session dict object is: " + str(session))
-    token = session['request_token']
-    del session['request_token']
-
-    auth.request_token = token
-
-    try:
-        auth.get_access_token(verifier)
-        global api_user
-        api_user = tweepy.API(auth)
-        userdata = api_user.me()
-        
-        # Store key and secret in session.
-        # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
-        session['key'] = auth.access_token
-        session['secret'] = auth.access_token_secret
-        session['userdata'] = userdata.__getstate__()['_json']
-        
-        return flask.render_template('app.html', 
-                                 name = userdata.name, 
-                                 screen_name = userdata.screen_name, 
-                                 bg_color = userdata.profile_background_color, 
-                                 followers_count = userdata.followers_count, 
-                                 created_at = userdata.created_at,
-                                 logged_in = True)
-        
-    except tweepy.TweepError:
-        error_msg = 'Error! Failed to get access token.'
-        print(error_msg)
-        
-        return flask.render_template('error.html',
-                                     error_msg = error_msg)
+#@app.route('/')
+#def send_token():
+#    redirect_url = ""
+#    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+##    redirect_url = auth.get_authorization_url()
+#
+#    try: 
+#        #get the request tokens
+#        redirect_url= auth.get_authorization_url()
+#        session['request_token'] = auth.request_token
+#        
+#        return render_template('start.html', redirect_url = redirect_url)
+#    except tweepy.TweepError:
+#        error_msg = 'Error! Failed to get request token'
+#        print(error_msg)
+#        
+#        # TODO: Ideally, this would return an error message. Test this.
+#        return flask.render_template('error.html',
+#                                     error_msg = error_msg)
+#
+#
+#@app.route("/verify")
+#def get_verification():
+#    # Get the verifier key from the request url.
+#    verifier = request.args['oauth_verifier']
+#
+#    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+#    print("session dict object is: " + str(session))
+#    token = session['request_token']
+#    del session['request_token']
+#
+#    auth.request_token = token
+#
+#    try:
+#        auth.get_access_token(verifier)
+#        global api_user
+#        api_user = tweepy.API(auth)
+#        userdata = api_user.me()
+#        
+#        # Store key and secret in session.
+#        # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
+#        session['key'] = auth.access_token
+#        session['secret'] = auth.access_token_secret
+#        session['userdata'] = userdata.__getstate__()['_json']
+#        
+#        return flask.render_template('app.html', 
+#                                 name = userdata.name, 
+#                                 screen_name = userdata.screen_name, 
+#                                 bg_color = userdata.profile_background_color, 
+#                                 followers_count = userdata.followers_count, 
+#                                 created_at = userdata.created_at,
+#                                 logged_in = True)
+#        
+#    except tweepy.TweepError:
+#        error_msg = 'Error! Failed to get access token.'
+#        print(error_msg)
+#        
+#        return flask.render_template('error.html',
+#                                     error_msg = error_msg)
 
 
 @app.route("/receipts")
@@ -144,7 +149,7 @@ def receipts():
 #    results["receipts"] = receipts
 #    return json.dumps(results, ensure_ascii = False)
     
-    return flask.render_template('results.html', 
+    return flask.render_template('results_table.html', 
                              results = receipts,
                              num_results = len(receipts),
                              show_results = show_results)
