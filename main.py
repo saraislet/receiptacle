@@ -221,7 +221,7 @@ def search_user(user_searched):
         # TODO: add error handling here if user enters bad URL
         #user_searched = re.sub(r"@","",user_searched)
         try:
-            username = parsing.get_username_from_text(user_searched)
+            username = parsing.parse_input_for_username(user_searched)
         except BaseException as e:
             print("Error in search_user():", e)
             error_msg = e
