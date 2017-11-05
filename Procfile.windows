@@ -1,1 +1,1 @@
-web: python sign_in.py runserver
+web: python main.py runserver
