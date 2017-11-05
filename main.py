@@ -213,6 +213,7 @@ def search_user(user_searched):
     receipts = []
     show_error = False
     error_msg = ""
+    username = user_searched
     
     if user_searched != None and user_searched != "":
         # Remove @ from username, if it exists.
@@ -225,7 +226,6 @@ def search_user(user_searched):
             print("Error in search_user():", e)
             error_msg = e
             show_error = True
-            username = user_searched
 
         show_search_name = True
         
