@@ -5,7 +5,7 @@ Created on Sun Nov  5 10:59:27 2017
 @author: Sarai
 """
 
-import re
+import re, requests
 
 
 def unshorten_url_re(url):
