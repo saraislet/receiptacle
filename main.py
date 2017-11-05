@@ -231,7 +231,7 @@ def search_user(user_searched):
         try:    
             with connection.cursor() as cursor:
                 # Read a single record
-                sql = "SELECT * FROM `receipts` WHERE `screen_name`=%s ORDER BY `id` DESC LIMIT 20"
+                sql = "SELECT * FROM `receipts` WHERE `screen_name`=%s AND `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql, (username,))
                 receipts = cursor.fetchall()
 
@@ -256,7 +256,7 @@ def search_user(user_searched):
         try:
             with connection.cursor() as cursor:
                 # Read 20 records
-                sql = "SELECT * FROM `receipts` ORDER BY `id` DESC LIMIT 20"
+                sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql,)
                 receipts = cursor.fetchall()
                 print("Displaying most recent 20 receipts.")
