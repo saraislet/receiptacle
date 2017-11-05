@@ -5,11 +5,12 @@ Created on Tue Sep 12 20:12:44 2017
 @author: Sarai
 """
 
-import os, re, json
+import os, json
 from flask import Flask, request, render_template, redirect, session
 #import flask
 import tweepy
 import pymysql.cursors
+import parsing
 #import Sturmtest as st
 #import config_local as config
 
@@ -18,7 +19,7 @@ app = Flask(__name__)
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
 
-callback_url = 'https://murmuring-wildwood-21076.herokuapp.com/verify'
+callback_url = ''
 
 
 def db_connect():
@@ -50,6 +51,7 @@ def get_api():
 
 @app.route('/')
 def temporary_redirect():
+    # Until the rest of the app is built, redirect to receipts.
     return redirect("/receipts", code=302)
 
 
@@ -122,8 +124,8 @@ def receipts():
     
     try:    
         with connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT * FROM `receipts` ORDER BY `id` DESC LIMIT 20"
+            # Fetch the most recent 20 records that are approved
+            sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql,)
             receipts = cursor.fetchall()
             
@@ -134,7 +136,7 @@ def receipts():
                 print("Returning receipts in array.")
                 
     except BaseException as e:
-        print("Error in receipts()", e)    
+        print("Error in receipts():", e)    
     
     # Don't show list of results if there aren't any.
     if len(receipts) > 0:
@@ -175,7 +177,7 @@ def receipts_json():
                 print("Returning JSON.")
                 
     except BaseException as e:
-        print("Error in receipts_json()", e)    
+        print("Error in receipts_json():", e)    
     
     for receipt in receipts:
         if "date_of_tweet" in receipt and receipt["date_of_tweet"] != None:
@@ -216,14 +218,21 @@ def search_user(user_searched):
         # Remove @ from username, if it exists.
         # TODO: add parsing to identify user from twitter URLs (see NaziBlockBot)
         # TODO: add error handling here if user enters bad URL
-        user_searched = re.sub(r"@","",user_searched)
+        #user_searched = re.sub(r"@","",user_searched)
+        try:
+            username = parsing.get_username_from_text(user_searched)
+        except BaseException as e:
+            print("Error in search_user():", e)
+            error_msg = e
+            show_error = True
+
         show_search_name = True
         
         try:    
             with connection.cursor() as cursor:
                 # Read a single record
                 sql = "SELECT * FROM `receipts` WHERE `screen_name`=%s ORDER BY `id` DESC LIMIT 20"
-                cursor.execute(sql, (user_searched,))
+                cursor.execute(sql, (username,))
                 receipts = cursor.fetchall()
 
                 # If a matching record exists, return result, otherwise return message.
@@ -237,7 +246,7 @@ def search_user(user_searched):
 #                    print(receipts)
                     
         except BaseException as e:
-            print("Error in search_user()", e)
+            print("Error in search_user():", e)
 
     else: 
         show_search_name = False
@@ -253,7 +262,9 @@ def search_user(user_searched):
                 print("Displaying most recent 20 receipts.")
                     
         except BaseException as e:
-            print("Error in search_user()", e)
+            print("Error in search_user():", e)
+            error_msg = e
+            show_error = True
     
     
     # Don't show list of results if there aren't any.
@@ -264,6 +275,7 @@ def search_user(user_searched):
     
     return render_template('results_table.html', 
                              user_searched = user_searched,
+                             username = username,
                              results = receipts,
                              num_results = len(receipts),
                              show_results = show_results,
