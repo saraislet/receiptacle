@@ -225,6 +225,7 @@ def search_user(user_searched):
             print("Error in search_user():", e)
             error_msg = e
             show_error = True
+            username = user_searched
 
         show_search_name = True
         
