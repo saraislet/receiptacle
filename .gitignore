@@ -1,7 +1,7 @@
 # Don't copy private tokens nor local files to public repository #
 tokens.py
 *local.py
-
+local*
 
 # Python files #
 venv
