@@ -26,6 +26,16 @@ w3-btn {
 		color:#fff!important;
 	}
 
+.censor {
+  color: transparent;
+  text-shadow: 0 0 .8em rgba(0,0,0,0.5);
+}
+  
+  .censor:hover {
+    color:inherit;
+    text-shadow: none;
+  }
+
 .cobalt,.hover-cobalt:hover {
   color:#fff!important;
   background-color:#5555BB!important;
