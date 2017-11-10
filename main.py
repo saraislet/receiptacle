@@ -7,12 +7,10 @@ Created on Tue Sep 12 20:12:44 2017
 
 import os, json
 from flask import Flask, request, render_template, redirect, session
-#import flask
 import tweepy
 import pymysql.cursors
 import parsing
 #import Sturmtest as st
-#import config_local as config
 
 app = Flask(__name__)
 
@@ -24,14 +22,19 @@ callback_url = ''
 
 def db_connect():
     # Connect to the database
-    connection = pymysql.connect(host = os.environ['host'],
-                                 user = os.environ['user'],
-                                 password = os.environ['password'],
-                                 db = os.environ['database'],
-                                 charset = 'utf8mb4',
-                                 cursorclass = pymysql.cursors.DictCursor)
-    
-    return connection    
+    # The connection will be sent to crud.py methods as needed.
+    try:
+        connection = pymysql.connect(host = os.environ['host'],
+                                     user = os.environ['user'],
+                                     password = os.environ['password'],
+                                     db = os.environ['database'],
+                                     charset = 'utf8mb4',
+                                     cursorclass = pymysql.cursors.DictCursor)
+        return connection
+    except BaseException as e:
+        print("Error in db_connect():", e)
+        raise OSError("Cannot connect to database.")
+        return
 
 
 def get_api():
@@ -42,10 +45,10 @@ def get_api():
         # Build OAuthHandler
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(session['key'], session['secret'])
-        
         return tweepy.API(auth)
     except tweepy.TweepError:
         print('Error! Failed to build OAuthHandler!')
+        raise OSError("Cannot connect to Twitter API.")
         return
 
 
@@ -160,12 +163,14 @@ def receipts():
 @app.route("/receipts_json")
 def receipts_json():
     
-    connection = db_connect()
-    receipts = []
     
-    try:    
+    try:
+        # Connect to database.
+        connection = db_connect()
+        receipts = []
+        
         with connection.cursor() as cursor:
-            # Read a single record
+            # Read 20 records.
             sql = "SELECT * FROM `receipts` LIMIT 20"
             cursor.execute(sql,)
             receipts = cursor.fetchall()
@@ -175,20 +180,22 @@ def receipts_json():
                 print("Results array is empty. Something went wrong.")
             else:
                 print("Returning JSON.")
+        
+        for receipt in receipts:
+            if "date_of_tweet" in receipt and receipt["date_of_tweet"] != None:
+                receipt["date_of_tweet"] = receipt["date_of_tweet"].isoformat()
+            if "date_added" in receipt and receipt["date_added"] != None:
+                receipt["date_added"] = receipt["date_added"].isoformat()
+        
+        results = {}
+        results["receipts"] = receipts
+        
+        return json.dumps(results, indent = 4, ensure_ascii = False)
                 
     except BaseException as e:
-        print("Error in receipts_json():", e)    
-    
-    for receipt in receipts:
-        if "date_of_tweet" in receipt and receipt["date_of_tweet"] != None:
-            receipt["date_of_tweet"] = receipt["date_of_tweet"].isoformat()
-        if "date_added" in receipt and receipt["date_added"] != None:
-            receipt["date_added"] = receipt["date_added"].isoformat()
-    
-    results = {}
-    results["receipts"] = receipts
-    
-    return json.dumps(results, indent = 4, ensure_ascii = False)
+        print("Error in receipts_json():", e)   
+        return render_template('error.html',
+                                     error_msg = e)
 
 
 @app.route("/search/<string:name>/")
@@ -217,9 +224,8 @@ def search_user(user_searched):
     
     if user_searched != None and user_searched != "":
         # Remove @ from username, if it exists.
-        # TODO: add parsing to identify user from twitter URLs (see NaziBlockBot)
+        # If user entered a valid Twitter full or short URL, extract the username.
         # TODO: add error handling here if user enters bad URL
-        #user_searched = re.sub(r"@","",user_searched)
         try:
             username = parsing.parse_input_for_username(user_searched)
         except BaseException as e:
@@ -244,7 +250,6 @@ def search_user(user_searched):
                 else:
                     print("User searched is in the database.")
                     #TODO: Display number of receipts found.
-#                    print(receipts)
                     
         except BaseException as e:
             print("Error in search_user():", e)
@@ -267,7 +272,6 @@ def search_user(user_searched):
             error_msg = e
             show_error = True
     
-    
     # Don't show list of results if there aren't any.
     if len(receipts) > 0:
         show_results = True
@@ -283,13 +287,14 @@ def search_user(user_searched):
                              show_error = show_error,
                              error_msg = error_msg,
                              show_search_name = show_search_name)
-
     
 
 @app.route('/main')
 def main():
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(session['key'], session['secret'])
+    
+    # This is used for testing, and may be removed later.
     userdata_json = session['userdata']
     
         
@@ -344,6 +349,7 @@ def main():
 #                             ratio = results.ratio,
 #                             show_baddies = show_baddies,
 #                             logged_in = True)
+
 
 @app.route('/logout')
 def logout():
