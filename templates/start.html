@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="container text">
-    <h2>Sturmjäger</h2>
-    <p>Sturmjäger uses read-and-write access to your Twitter account to help you assess, identify, and block Nazi accounts. You'll need to give us permission to access your account.</p>
-	<p>We promise that we will never post anything to your account. You can view the source code on <a href="https://github.com/Saraislet/sturm">Github</a>.</p>
-	<!-- <p>Click below to authenticate with Twitter. You'll be taken to Twitter to log in (if you aren't already) and to grant access. Afterward you'll be redirected back to Sturmjäger.</p> -->
+  <h2>Receiptacle</h2>
+  <p>Receiptacle uses read-only access to your Twitter account to verify your identify for submitting or approving receipts. You can access the <a href="../receipts">receipts database</a> without logging in.</p>
+	<!--<p>We promise that we will never post anything to your account without your explicit permission and action.-->
+  <p>Receiptacle does not request write access to your Twitter account, nor access to your DMs! You can view the source code on <a href="https://github.com/Saraislet/receiptacle">Github</a>.</p>
+	<!-- <p>Click below to authenticate with Twitter. You'll be taken to Twitter to log in (if you aren't already) and to grant access. Afterward you'll be redirected back to Receiptacle.</p> -->
 	<a href="{{ redirect_url }}" class="w3-btn cobalt">Okay</a>
 </div>
 {% endblock %}
