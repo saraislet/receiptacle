@@ -41,7 +41,7 @@
       <tbody>
         {% for result in results %}
           <tr>
-            <td><input type="checkbox" name="approvals" value="{{result.id}}"></td>
+            <td><input type="checkbox" name="approvals[]" value="{{result.id}}"></td>
             <td>
               {{result.name}} <br> 
               <a href="https://www.twitter.com/{{result.screen_name}}">
