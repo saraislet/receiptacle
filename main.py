@@ -106,13 +106,14 @@ def get_verification():
         session['secret'] = auth.access_token_secret
         session['userdata'] = userdata.__getstate__()['_json']
         
-        return render_template('app.html', 
-                                 name = userdata.name, 
-                                 screen_name = userdata.screen_name, 
-                                 bg_color = userdata.profile_background_color, 
-                                 followers_count = userdata.followers_count, 
-                                 created_at = userdata.created_at,
-                                 logged_in = True)
+        return redirect("/receipts", code=302)
+#        return render_template('receipts.html', 
+#                                 name = userdata.name, 
+#                                 screen_name = userdata.screen_name, 
+#                                 bg_color = userdata.profile_background_color, 
+#                                 followers_count = userdata.followers_count, 
+#                                 created_at = userdata.created_at,
+#                                 logged_in = True)
         
     except tweepy.TweepError:
         error_msg = 'Error! Failed to get access token.'
