@@ -26,6 +26,7 @@ def unshorten_urls_in_text(string):
 def remove_ats(tweet):
     # Remove any leading @s (e.g., replies) from a tweet.
     # Any @ that is not at the beginning of a tweet will be left.
+    # TODO: Separate into two methods, one removing leading @s and one removing all.
     return re.sub(r'^(@\S+\s)*', "", tweet)
 
 
@@ -110,8 +111,8 @@ def get_username_from_text(text):
 
 
 def parse_input_for_username(text):
-    # Remove @ if it exists and return the following username
-    # Or parse a URL in the input for a twitter username.
+    # If there is a Twitter URL, parse the screen_name.
+    # Else, remove @ if it exists and return the following username
     urls = get_twitter_urls(text)
     
     if urls != "" and urls != []:
