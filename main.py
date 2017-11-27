@@ -340,5 +340,5 @@ def logout():
 if __name__ == '__main__':
     app.debug = True
     app.secret_key = os.environ['session_secret_key']
-#    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run()

@@ -1,1 +1,1 @@
-web: python main.py runserver
+web: python -u main.py runserver --error-logfile=- --access-logfile=-
