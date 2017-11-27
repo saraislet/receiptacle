@@ -4,7 +4,7 @@
 <div class="w3-container">
   <h2>Receipts:</h2>
   <small>
-    (<a href="https://young-meadow-72614.herokuapp.com/receipts_json">JSON</a>)
+    (<a href="/receipts_json">JSON</a>)
   </small>
 
 
@@ -19,10 +19,11 @@
   </div>
 
   {% if show_search_name %}
-    Searched for @{{username}}:
+    <p>Searched for @{{username}}:</p>
+    <p>Displaying {{num_receipts}} receipts.</p>
   {% endif %}
   {% if show_error %}
-    <p>{{error_msg}}</p>
+    <p class="error">{{error_msg}}</p>
   {% endif %}
 
   {% if show_results %}

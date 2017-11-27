@@ -49,14 +49,14 @@ w3-btn {
 }
 
 .error {
-	color:#333!important;
-	background-color:#fdd!important;
+	color:#333;
+	background-color:#fdd;
 	border-color:#333;
-	margin:8px!important;
+	margin:8px;
 }
 
 .note {
-	color:#999!important;
+	color:#999;
 }
 
 .subtle,.hover-subtle:hover {
