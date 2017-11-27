@@ -122,10 +122,11 @@ def get_verification():
 
 
 @app.route("/approve")
-def approvals():
+def approvals(approval_msg=""):
     
     connection = db_connect()
     receipts = []
+    show_error = False
         
     try:    
         with connection.cursor() as cursor:
@@ -143,6 +144,7 @@ def approvals():
                 print("Returning receipts in array.")
                 
     except BaseException as e:
+        show_error = True
         print("Error in approve():", e)    
     
     # Don't show list of results if there aren't any.
@@ -151,12 +153,42 @@ def approvals():
     else:
         show_results = False
     
-    return render_template('results_table.html', 
+    return render_template('approvals.html', 
                              results = receipts,
                              num_receipts = len(receipts),
                              logged_in = session['logged_in'],
                              show_approvals = session['show_approvals'],
-                             show_results = show_results)
+                             show_results = show_results,
+                             show_error = show_error)
+
+
+@app.route('/approve', methods=['POST'])
+def approve_receipts():
+    try:
+        approved_ids = request.form['approvals']
+        num_approvals = len(approved_ids)
+        print("Approving receipts: " + str(approved_ids))
+        
+        connection = db_connect()
+        with connection.cursor() as cursor:
+            # Update records in receipts table
+            sql = "UPDATE `receipts` WHERE `id`=%s SET `approved_by_id`=%s"
+            cursor.execute(sql, (approved_ids, session['user_id'],))
+            print("Successfully updated approvals by " + str(session['user_id']) + " on the receipts table.")
+    
+            # Commit to save changes
+            connection.commit()
+            connection.close()
+        
+        
+        approval_msg = str(num_approvals) + " receipts approved."
+        return approvals(approval_msg)
+    
+    except BaseException as e:
+        show_error = True
+        print("Error in approve_receipts():", e) 
+        return render_template('error.html', error_msg = e, show_error = show_error)
+    
 
 
 @app.route("/receipts")
@@ -230,8 +262,7 @@ def receipts_json():
                 
     except BaseException as e:
         print("Error in receipts_json():", e)   
-        return render_template('error.html',
-                                     error_msg = e)
+        return render_template('error.html', error_msg = e)
 
 
 @app.route("/search/<string:name>/")
