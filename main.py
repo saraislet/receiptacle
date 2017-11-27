@@ -7,7 +7,7 @@ Created on Tue Sep 12 20:12:44 2017
 
 import os, json
 from flask import Flask, request, render_template, redirect, session
-from flask_session import Session
+from flask.ext.session import Session
 import tweepy
 import pymysql.cursors
 import parsing, crud
