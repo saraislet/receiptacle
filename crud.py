@@ -8,13 +8,10 @@ Created on Thu Nov  9 18:59:22 2017
 #import tweepy
 #import pymysql.cursors
 
-def check_admins(connection, api):
+def check_admins(user_id, connection):
     # Check if authenticated user is a blocklist admin, return array of blocklist_ids.
     
-    try:
-        userdata = api.me()
-        user_id = userdata.id
-        
+    try:        
         with connection.cursor() as cursor:
             sql = "SELECT blocklist_id FROM `blocklist_admins` WHERE `admin_id`=%s"
             cursor.execute(sql, (user_id,))

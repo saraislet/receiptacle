@@ -7,7 +7,6 @@ Created on Tue Sep 12 20:12:44 2017
 
 import os, json
 from flask import Flask, request, render_template, redirect, session
-#from flask.ext.session import Session
 import tweepy
 import pymysql.cursors
 import parsing, crud
@@ -15,7 +14,6 @@ import parsing, crud
 
 app = Flask(__name__)
 app.secret_key = os.environ['session_secret_key']
-#sess = Session()
 
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
@@ -67,7 +65,6 @@ def get_api():
 def send_token():
     redirect_url = ""
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
-#    redirect_url = auth.get_authorization_url()
 
     try: 
         #get the request tokens
@@ -97,13 +94,19 @@ def get_verification():
 
     try:
         auth.get_access_token(verifier)
-        global api_user
-        api_user = tweepy.API(auth)
+        api = tweepy.API(auth)
         
         # Store key and secret in session.
         # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
         session['key'] = auth.access_token
         session['secret'] = auth.access_token_secret
+        session['logged_in'] = True
+        session['user_id'] = api.me().id
+        session['blocklist_ids'] = crud.check_admins(session['user_id'], db_connect())
+        
+        if session['blocklist_ids'] is not []:
+            session['show_approvals'] = True
+
         
         return redirect("/receipts", code=302)
         
@@ -112,6 +115,48 @@ def get_verification():
         print(error_msg)
         
         return render_template('error.html', error_msg = error_msg)
+    
+    except BaseException as e:
+        print("Error in receipts():", e)
+        return render_template('error.html', error_msg = error_msg)
+
+
+@app.route("/approve")
+def approvals():
+    
+    connection = db_connect()
+    receipts = []
+        
+    try:    
+        with connection.cursor() as cursor:
+            # Fetch the most recent 20 records that are approved
+            sql = "SELECT * FROM `receipts`"
+            sql += " WHERE `approved_by_id` IS NULL"
+            sql += " ORDER BY `id` DESC LIMIT 20"
+            cursor.execute(sql,)
+            receipts = cursor.fetchall()
+            
+            # If a matching record exists, return result, otherwise return message.
+            if len(receipts) == 0:
+                print("Results array is empty. Something went wrong.")
+            else:
+                print("Returning receipts in array.")
+                
+    except BaseException as e:
+        print("Error in approve():", e)    
+    
+    # Don't show list of results if there aren't any.
+    if len(receipts) > 0:
+        show_results = True
+    else:
+        show_results = False
+    
+    return render_template('results_table.html', 
+                             results = receipts,
+                             num_receipts = len(receipts),
+                             logged_in = session['logged_in'],
+                             show_approvals = session['show_approvals'],
+                             show_results = show_results)
 
 
 @app.route("/receipts")
@@ -119,12 +164,7 @@ def receipts():
     
     connection = db_connect()
     receipts = []
-    
-    if 'key' in session:
-        logged_in = True
-        if crud.check_admins(connection, get_api()) is not []:
-            show_approvals = True
-    
+        
     try:    
         with connection.cursor() as cursor:
             # Fetch the most recent 20 records that are approved
@@ -150,8 +190,8 @@ def receipts():
     return render_template('results_table.html', 
                              results = receipts,
                              num_receipts = len(receipts),
-                             logged_in = logged_in,
-                             show_approvals = show_approvals,
+                             logged_in = session['logged_in'],
+                             show_approvals = session['show_approvals'],
                              show_results = show_results)
         
 
@@ -341,7 +381,4 @@ def logout():
 
 if __name__ == '__main__':
     app.debug = True
-#    app.secret_key = os.environ['session_secret_key']
-#    app.config['SESSION_TYPE'] = 'filesystem'
-#    sess.init_app(app)
     app.run()

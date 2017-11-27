@@ -34,6 +34,9 @@ h1{
         {% if show_approvals %}
             <a href="/approve" class="w3-bar-item hover-subtle w3-button w3-mobile">Approve</a>
         {% endif %}
+        {% if logged_in %}
+            <a href="/logout" class="w3-bar-item w3-right hover-subtle w3-button w3-mobile">Logout</a>
+        {% endif %}
     </div>
     <div class="w3-container">
     {% block body %}{% endblock %}
