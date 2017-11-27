@@ -7,12 +7,14 @@ Created on Tue Sep 12 20:12:44 2017
 
 import os, json
 from flask import Flask, request, render_template, redirect, session
+from flask_session import Session
 import tweepy
 import pymysql.cursors
 import parsing, crud
 #import Sturmtest as st
 
 app = Flask(__name__)
+sess = Session()
 
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
@@ -341,4 +343,5 @@ if __name__ == '__main__':
     app.debug = True
     app.secret_key = os.environ['session_secret_key']
     app.config['SESSION_TYPE'] = 'filesystem'
+    sess.init_app(app)
     app.run()
