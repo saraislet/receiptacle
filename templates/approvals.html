@@ -25,38 +25,38 @@
   {% if show_results %}
   <form action="/approve" method="POST" class="w3-container">
     <input type="submit" name="approve_button" value="Approve" class="w3-btn cobalt w3-margin"/>
-  </form>
+  
 
-  <div class="w3-responsive">
-    <table class="w3-table-all w3-hoverable">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>Approve?</th>
-          <th>Name</th>
-          <th>Receipt</th>
-          <th style="width:14em">Date</th>
-          <th>Blocklist ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for result in results %}
-          <tr>
-            <td><input type="checkbox" name="approvals[]" value="{{result.id}}"></td>
-            <td>
-              {{result.name}} <br> 
-              <a href="https://www.twitter.com/{{result.screen_name}}">
-                <font color="#657786">@{{result.screen_name}}</font>
-              </a>
-            </td>
-            <td class="censor">{{result.contents_text}}</td>
-            <td><a href="{{result.url}}">{{result.date_of_tweet}}</a></td>
-            <td>{{result.blocklist_id}}</td>
+    <div class="w3-responsive">
+      <table class="w3-table-all w3-hoverable">
+        <thead>
+          <tr class="w3-light-grey">
+            <th>Approve?</th>
+            <th>Name</th>
+            <th>Receipt</th>
+            <th style="width:14em">Date</th>
+            <th>Blocklist ID</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          {% for result in results %}
+            <tr>
+              <td><input type="checkbox" name="approvals[]" value="{{result.id}}"></td>
+              <td>
+                {{result.name}} <br> 
+                <a href="https://www.twitter.com/{{result.screen_name}}">
+                  <font color="#657786">@{{result.screen_name}}</font>
+                </a>
+              </td>
+              <td class="censor">{{result.contents_text}}</td>
+              <td><a href="{{result.url}}">{{result.date_of_tweet}}</a></td>
+              <td>{{result.blocklist_id}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
   {% endif %}
-  <!-- {{results}} -->
 </div>
 {% endblock %}
