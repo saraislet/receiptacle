@@ -99,22 +99,13 @@ def get_verification():
         auth.get_access_token(verifier)
         global api_user
         api_user = tweepy.API(auth)
-        userdata = api_user.me()
         
         # Store key and secret in session.
         # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
         session['key'] = auth.access_token
         session['secret'] = auth.access_token_secret
-        session['userdata'] = userdata.__getstate__()['_json']
         
         return redirect("/receipts", code=302)
-#        return render_template('receipts.html', 
-#                                 name = userdata.name, 
-#                                 screen_name = userdata.screen_name, 
-#                                 bg_color = userdata.profile_background_color, 
-#                                 followers_count = userdata.followers_count, 
-#                                 created_at = userdata.created_at,
-#                                 logged_in = True)
         
     except tweepy.TweepError:
         error_msg = 'Error! Failed to get access token.'
@@ -128,6 +119,11 @@ def receipts():
     
     connection = db_connect()
     receipts = []
+    
+    if 'key' in session:
+        logged_in = True
+        if crud.check_admins(connection, get_api()) is not []:
+            show_approvals = True
     
     try:    
         with connection.cursor() as cursor:
@@ -154,6 +150,8 @@ def receipts():
     return render_template('results_table.html', 
                              results = receipts,
                              num_receipts = len(receipts),
+                             logged_in = logged_in,
+                             show_approvals = show_approvals,
                              show_results = show_results)
         
 

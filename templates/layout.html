@@ -27,10 +27,13 @@ h1{
 <body>
     <div class="w3-bar charcoal">
         <a href="/" class="w3-bar-item hover-subtle w3-button w3-mobile">Home</a>
-        {% if logged_in %}
-            <a href="/main" class="w3-bar-item hover-subtle w3-button w3-mobile">App</a>
-        {% endif %}
         <a href="/receipts" class="w3-bar-item hover-subtle w3-button w3-mobile">Receipts</a>
+        {% if logged_in %}
+            <a href="/" class="w3-bar-item hover-subtle w3-button w3-mobile">Sturm</a>
+        {% endif %}
+        {% if show_approvals %}
+            <a href="/approve" class="w3-bar-item hover-subtle w3-button w3-mobile">Approve</a>
+        {% endif %}
     </div>
     <div class="w3-container">
     {% block body %}{% endblock %}

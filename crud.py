@@ -8,6 +8,30 @@ Created on Thu Nov  9 18:59:22 2017
 #import tweepy
 #import pymysql.cursors
 
+def check_admins(connection, api):
+    # Check if authenticated user is a blocklist admin, return array of blocklist_ids.
+    
+    try:
+        userdata = api.me()
+        user_id = userdata.id
+        
+        with connection.cursor() as cursor:
+            sql = "SELECT blocklist_id FROM `blocklist_admins` WHERE `admin_id`=%s"
+            cursor.execute(sql, (user_id,))
+            blocklist_ids = cursor.fetchall()
+            
+            if blocklist_ids is None:
+                return []
+            else:
+                blocklist_ids
+                print(str(blocklist_ids))
+                return blocklist_ids
+    except BaseException as e:
+        print("Error in check_admins():", e)
+        return []
+    
+
+
 def search_receipts_for_user(username, connection, count = 20):
     # Retrieve up to $count records for username.
     results = Results([])
@@ -37,7 +61,7 @@ def search_receipts_for_user(username, connection, count = 20):
             return results
         
     except BaseException as e:
-            print("Error in search_user():", e)
+            print("Error in search_receipts_for_user():", e)
             results.show_error = True
             return results
 
