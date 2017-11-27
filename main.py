@@ -126,6 +126,7 @@ def approvals(approval_msg=""):
     connection = db_connect()
     receipts = []
     show_error = False
+    error_msg = ""
         
     try:    
         with connection.cursor() as cursor:
