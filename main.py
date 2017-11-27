@@ -86,7 +86,6 @@ def get_verification():
     verifier = request.args['oauth_verifier']
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    print("session dict object is: " + str(session))
     token = session['request_token']
     del session['request_token']
 
@@ -156,6 +155,8 @@ def approvals(approval_msg=""):
         
     if approval_msg is not "":
         show_approval_msg = True
+    else:
+        show_approval_msg = False
     
     return render_template('approvals.html', 
                              results = receipts,
