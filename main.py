@@ -145,6 +145,7 @@ def approvals(approval_msg=""):
                 
     except BaseException as e:
         show_error = True
+        error_msg = e
         print("Error in approve():", e)    
     
     # Don't show list of results if there aren't any.
@@ -152,14 +153,20 @@ def approvals(approval_msg=""):
         show_results = True
     else:
         show_results = False
+        
+    if approval_msg is not "":
+        show_approval_msg = True
     
     return render_template('approvals.html', 
                              results = receipts,
                              num_receipts = len(receipts),
                              logged_in = session['logged_in'],
                              show_approvals = session['show_approvals'],
+                             show_approval_msg = show_approval_msg,
                              show_results = show_results,
-                             show_error = show_error)
+                             show_error = show_error,
+                             error_msg = error_msg,
+                             approval_msg = approval_msg)
 
 
 @app.route('/approve', methods=['POST'])

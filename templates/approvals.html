@@ -21,6 +21,9 @@
   {% if show_error %}
     <p class="error">{{error_msg}}</p>
   {% endif %}
+  {% if show_approval_message %}
+    <p class="note">{{approval_msg}}</p>
+  {% endif %}
 
   {% if show_results %}
   <form action="/approve" method="POST" class="w3-container">
