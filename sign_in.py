@@ -6,8 +6,9 @@ Created on Mon Nov 27 10:02:22 2017
 """
 
 import os
-from flask import render_template, request, session
+from flask import redirect, render_template, request, session
 import tweepy
+import crud, utils
 
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
@@ -54,7 +55,7 @@ def get_verification():
         session['secret'] = auth.access_token_secret
         session['logged_in'] = True
         session['user_id'] = api.me().id
-        session['blocklist_ids'] = crud.check_admins(session['user_id'], db_connect())
+        session['blocklist_ids'] = crud.check_admins(session['user_id'], utils.db_connect())
         
         if session['blocklist_ids'] is not []:
             session['show_approvals'] = True
