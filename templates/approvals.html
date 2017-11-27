@@ -23,8 +23,10 @@
   {% endif %}
 
   {% if show_results %}
-  <input type="submit" name="submit" Value="Approve" class="w3-btn cobalt w3-margin"/>
-
+  <form action="/approve_receipts" method="POST" class="w3-container">
+    <input type="submit" name="approvals" Value="Approve" class="w3-btn cobalt w3-margin"/>
+  </form>
+  
   <div class="w3-responsive">
     <table class="w3-table-all w3-hoverable">
       <thead>
