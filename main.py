@@ -165,7 +165,7 @@ def approvals(approval_msg=""):
 @app.route('/approve', methods=['POST'])
 def approve_receipts():
     try:
-        approved_ids = request.form['approvals']
+        approved_ids = request.form.getlist('approvals')
         num_approvals = len(approved_ids)
         print("Approving receipts: " + str(approved_ids))
         
