@@ -181,8 +181,10 @@ def approve_receipts():
         connection = db_connect()
         with connection.cursor() as cursor:
             # Update records in receipts table
-            sql = "UPDATE `receipts` WHERE `id`=%s SET `approved_by_id`=%s"
-            cursor.executemany(sql, (approved_ids, session['user_id'],))
+            for approved_id in approved_ids:
+                approved_id = int(approved_id)
+                sql = "UPDATE `receipts` SET `approved_by_id`=%s WHERE `id`=%s"
+                cursor.execute(sql, (session['user_id'], approved_id,))
             print("Successfully updated approvals by " + str(session['user_id']) + " on the receipts table.")
     
             # Commit to save changes
