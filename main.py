@@ -5,11 +5,10 @@ Created on Tue Sep 12 20:12:44 2017
 @author: Sarai
 """
 
-import os, json
+import os
 from flask import Flask, request, render_template, redirect, session
 import tweepy
-import pymysql.cursors
-import parsing, crud, sign_in
+import crud, sign_in
 #import Sturmtest as st
 
 app = Flask(__name__)
@@ -17,48 +16,6 @@ app.secret_key = os.environ['session_secret_key']
 
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
-
-#hostname = 'localhost:5000'
-hostname = 'https://young-meadow-72614.herokuapp.com'
-callback_url = hostname + '/verify'
-
-
-def db_connect():
-    # Connect to the database
-    # The connection will be sent to crud.py methods as needed.
-    try:
-        connection = pymysql.connect(host = os.environ['host'],
-                                     user = os.environ['user'],
-                                     password = os.environ['password'],
-                                     db = os.environ['database'],
-                                     charset = 'utf8mb4',
-                                     cursorclass = pymysql.cursors.DictCursor)
-        return connection
-    except BaseException as e:
-        print("Error in db_connect():", e)
-        raise OSError("Cannot connect to database.")
-        return
-
-
-def get_api():
-    # Rebuild OAuthHandler and return tweepy.API(auth) if session exists.
-    # Otherwise, return error_msg.
-    
-    try:
-        # Build OAuthHandler
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(session['key'], session['secret'])
-        return tweepy.API(auth)
-    except tweepy.TweepError:
-        print('Error! Failed to build OAuthHandler!')
-        raise OSError("Cannot connect to Twitter API.")
-        return
-
-
-#@app.route('/')
-#def temporary_redirect():
-#    # Until the rest of the app is built, redirect to receipts.
-#    return redirect("/receipts", code=302)
 
 
 @app.route('/')
@@ -73,158 +30,35 @@ def get_verification():
 
 @app.route("/approve")
 def approvals(approval_msg=""):
-    
-    connection = db_connect()
-    receipts = []
-    show_error = False
-    error_msg = ""
-        
-    try:    
-        with connection.cursor() as cursor:
-            # Fetch the most recent 20 records that are approved
-            sql = "SELECT * FROM `receipts`"
-            sql += " WHERE `approved_by_id` IS NULL"
-            sql += " ORDER BY `id` DESC LIMIT 20"
-            cursor.execute(sql,)
-            receipts = cursor.fetchall()
-            
-            # If a matching record exists, return result, otherwise return message.
-            if len(receipts) == 0:
-                print("Results array is empty. Something went wrong.")
-            else:
-                print("Returning receipts in array.")
-                
-    except BaseException as e:
-        show_error = True
-        error_msg = e
-        print("Error in approve():", e)    
-    
-    # Don't show list of results if there aren't any.
-    if len(receipts) > 0:
-        show_results = True
-    else:
-        show_results = False
-        
-    if approval_msg is not "":
-        show_approval_msg = True
-    else:
-        show_approval_msg = False
-    
-    return render_template('approvals.html', 
-                             results = receipts,
-                             num_receipts = len(receipts),
-                             logged_in = session['logged_in'],
-                             show_approvals = session['show_approvals'],
-                             show_approval_msg = show_approval_msg,
-                             show_results = show_results,
-                             show_error = show_error,
-                             error_msg = error_msg,
-                             approval_msg = approval_msg)
+    return crud.get_approvals(approval_msg)
 
 
 @app.route('/approve', methods=['POST'])
 def approve_receipts():
+    # Get values from post request, and update indicated approvals in db.
     try:
         approved_ids = request.form.getlist('approvals')
-        num_approvals = len(approved_ids)
-        print("Approving receipts: " + str(approved_ids))
+        for n in approved_ids:
+            if n.isdigit():
+                n = int(n)
+            else:
+                raise ValueError("Item in array is not an integer: " + str(n))
         
-        connection = db_connect()
-        with connection.cursor() as cursor:
-            # Update records in receipts table
-            for approved_id in approved_ids:
-                approved_id = int(approved_id)
-                sql = "UPDATE `receipts` SET `approved_by_id`=%s WHERE `id`=%s"
-                cursor.execute(sql, (session['user_id'], approved_id,))
-            print("Successfully updated approvals by " + str(session['user_id']) + " on the receipts table.")
-    
-            # Commit to save changes
-            connection.commit()
-            connection.close()
-        
-        
-        approval_msg = str(num_approvals) + " receipts approved."
-        return approvals(approval_msg)
+        return crud.post_approvals(approved_ids)
     
     except BaseException as e:
-        show_error = True
-        print("Error in approve_receipts():", e) 
-        return render_template('error.html', error_msg = e, show_error = show_error)
-    
+        print("Error in approve_receipts():", e)   
+        return render_template('error.html', error_msg = e)
 
 
 @app.route("/receipts")
 def receipts():
-    
-    connection = db_connect()
-    receipts = []
-        
-    try:    
-        with connection.cursor() as cursor:
-            # Fetch the most recent 20 records that are approved
-            sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
-            cursor.execute(sql,)
-            receipts = cursor.fetchall()
-            
-            # If a matching record exists, return result, otherwise return message.
-            if len(receipts) == 0:
-                print("Results array is empty. Something went wrong.")
-            else:
-                print("Returning receipts in array.")
-                
-    except BaseException as e:
-        print("Error in receipts():", e)    
-    
-    # Don't show list of results if there aren't any.
-    if len(receipts) > 0:
-        show_results = True
-    else:
-        show_results = False
-    
-    return render_template('results_table.html', 
-                             results = receipts,
-                             num_receipts = len(receipts),
-                             logged_in = session['logged_in'],
-                             show_approvals = session['show_approvals'],
-                             show_results = show_results)
+    return crud.get_receipts()
         
 
 @app.route("/receipts_json")
 def receipts_json():
-    # Return most recent 20 records in JSON.
-    # This method exists to test the React UI.
-    
-    try:
-        # Connect to database.
-        connection = db_connect()
-        receipts = []
-        
-        with connection.cursor() as cursor:
-            # Read 20 records.
-            sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
-            cursor.execute(sql,)
-            receipts = cursor.fetchall()
-            
-            # If a matching record exists, return result, otherwise return message.
-            if len(receipts) == 0:
-                print("Results array is empty. Something went wrong.")
-            else:
-                print("Returning JSON.")
-        
-        for receipt in receipts:
-            if "date_of_tweet" in receipt and receipt["date_of_tweet"] != None:
-                receipt["date_of_tweet"] = receipt["date_of_tweet"].isoformat()
-            if "date_added" in receipt and receipt["date_added"] != None:
-                receipt["date_added"] = receipt["date_added"].isoformat()
-        
-        results = {}
-        results["receipts"] = receipts
-        
-        return json.dumps(results, indent = 4, ensure_ascii = False)
-                
-    except BaseException as e:
-        print("Error in receipts_json():", e)   
-        return render_template('error.html', error_msg = e)
+    return crud.get_receipts_json()
 
 
 @app.route("/search/<string:name>/")
@@ -241,66 +75,7 @@ def search_user_form():
 
 
 def search_user(user_searched):
-    
-    connection = db_connect()
-    
-    receipts = []
-    show_error = False
-    error_msg = ""
-    username = user_searched
-    
-    if user_searched != None and user_searched != "":
-        # Remove @ from username, if it exists.
-        # If user entered a valid Twitter full or short URL, extract the username.
-        try:
-            username = parsing.parse_input_for_username(user_searched)
-            show_search_name = True
-            
-            results = crud.search_receipts_for_user(username, connection, 20)
-            receipts = results.receipts
-            show_error = results.show_error
-            error_msg = results.error_msg
-                    
-        except BaseException as e:
-            print("Error in search_user():", e)
-            error_msg = e
-            show_error = True
-
-    else: 
-        show_search_name = False
-       
-        # Get most recent 20 receipts from db.
-        try:
-            with connection.cursor() as cursor:
-                # Read 20 records
-                sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
-                cursor.execute(sql,)
-                receipts = cursor.fetchall()
-                num_receipts = len(receipts)
-                print("Displaying most recent 20 receipts.")
-                    
-        except BaseException as e:
-            print("Error in search_user():", e)
-            error_msg = e
-            show_error = True
-    
-    # Don't show list of results if there aren't any.
-    if receipts is None or len(receipts) == 0:
-        show_results = False
-        num_receipts = 0
-    else:
-        show_results = True
-        num_receipts = len(receipts)
-    
-    return render_template('results_table.html', 
-                             user_searched = user_searched,
-                             username = username,
-                             results = receipts,
-                             num_receipts = num_receipts,
-                             show_results = show_results,
-                             show_error = show_error,
-                             error_msg = error_msg,
-                             show_search_name = show_search_name)
+    return crud.search_receipts_for_user(user_searched)
     
 
 @app.route('/main')
@@ -317,58 +92,15 @@ def main():
                                  name = userdata_json['name'],
                                  followers_count = userdata_json['followers_count'])
 
-
-#@app.route('/sturm', methods=['POST'])
-#def sturm():
-#    
-#    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-#    auth.set_access_token(session['key'], session['secret'])
-#    api_user = tweepy.API(auth)
-#    
-##    api_user = session['api']
-#    user = request.form['screen_name']
-#    num_receipts = request.form['num_receipts']
-#    
-#    # Set num_receipts to default 30 if not a number.
-#    # TODO: Validate form before submit?
-#    if num_receipts.isdigit():
-#        num_receipts = int(num_receipts)
-#    else:
-#        num_receipts = 30
-#        
-#    # Remove @ from username, if it exists.
-#    # TODO: add parsing to identify user from twitter.com URLs?
-#    # TODO: Check if all status/user URLs begin with twitter.com/$screen_name.
-#    # TODO: add error handling here if user enters bad URL
-#    user = re.sub(r"@","",user)
-#    
-#    re_patterns = st.init(st.words)
-#    st.set_api(api_user)
-#    results = st.test_followers(user, re_patterns, num_receipts)
-#    st.print_results(results.scores)
-#    
-#    # Don't show list of baddies if there aren't any.
-#    if results.num_baddies > 0:
-#        show_baddies = True
-#    else:
-#        show_baddies = False
-#    
-#    return flask.render_template('results.html', 
-#                             user = user,
-#                             baddies_names = results.baddies_names,
-#                             baddies = results.baddies,
-#                             results = results.scores,
-#                             num_baddies = results.num_baddies,
-#                             num_receipts = results.num_receipts,
-#                             ratio = results.ratio,
-#                             show_baddies = show_baddies,
-#                             logged_in = True)
-
-
 @app.route('/logout')
 def logout():
     # remove variables from session
-    del session['request_token']
+    if 'request_token' in session:
+        del session['request_token']
+    if 'logged_in' in session:
+        del session['logged_in']
+    if 'show_approvals' in session:
+        del session['show_approvals']
     return redirect('../')
 
 

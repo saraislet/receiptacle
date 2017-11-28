@@ -14,18 +14,14 @@
     </form>
   </div>
   -->
-  {% if show_search_name %}
-    <p>Searched for @{{username}}:</p>
-    <p>Displaying {{num_receipts}} receipts.</p>
-  {% endif %}
-  {% if show_error %}
-    <p class="error">{{error_msg}}</p>
-  {% endif %}
-  {% if show_approval_message %}
-    <p class="note">{{approval_msg}}</p>
-  {% endif %}
 
-  {% if show_results %}
+  {% if results.show_error %}
+    <p class="error">{{results.error_msg}}</p>
+  {% endif %}
+  {% if results.show_approval_msg %}
+    <p class="note">{{results.approval_msg}}</p>
+  {% endif %}
+  {% if results.show_results %}
   <form action="/approve" method="POST" class="w3-container">
     <input type="submit" name="approve_button" value="Approve" class="w3-btn cobalt w3-margin"/>
   
@@ -42,18 +38,18 @@
           </tr>
         </thead>
         <tbody>
-          {% for result in results %}
+          {% for receipt in results.receipts %}
             <tr>
-              <td><input type="checkbox" name="approvals" value="{{result.id}}" class="w3-check"></td>
+              <td><input type="checkbox" name="approvals" value="{{receipt.id}}" class="w3-check"></td>
               <td>
-                {{result.name}} <br> 
-                <a href="https://www.twitter.com/{{result.screen_name}}">
-                  <font color="#657786">@{{result.screen_name}}</font>
+                {{receipt.name}} <br> 
+                <a href="https://www.twitter.com/{{receipt.screen_name}}">
+                  <font color="#657786">@{{receipt.screen_name}}</font>
                 </a>
               </td>
-              <td class="censor">{{result.contents_text}}</td>
-              <td><a href="{{result.url}}">{{result.date_of_tweet}}</a></td>
-              <td>{{result.blocklist_id}}</td>
+              <td class="censor">{{receipt.contents_text}}</td>
+              <td><a href="{{receipt.url}}">{{receipt.date_of_tweet}}</a></td>
+              <td>{{receipt.blocklist_id}}</td>
             </tr>
           {% endfor %}
         </tbody>

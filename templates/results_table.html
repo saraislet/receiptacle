@@ -18,15 +18,15 @@
     </form>
   </div>
 
-  {% if show_search_name %}
+  {% if results.show_search_name %}
     <p>Searched for @{{username}}:</p>
-    <p>Displaying {{num_receipts}} receipts.</p>
+    <p>Displaying {{results.num_receipts}} receipts.</p>
   {% endif %}
-  {% if show_error %}
-    <p class="error">{{error_msg}}</p>
+  {% if results.show_error %}
+    <p class="error">{{results.error_msg}}</p>
   {% endif %}
 
-  {% if show_results %}
+  {% if results.show_results %}
   <div class="w3-responsive">
     <table class="w3-table-all w3-hoverable">
       <thead>
@@ -38,17 +38,17 @@
         </tr>
       </thead>
       <tbody>
-        {% for result in results %}
+        {% for receipt in results.receipts %}
           <tr>
             <td>
-              {{result.name}} <br> 
-              <a href="https://www.twitter.com/{{result.screen_name}}">
-                <font color="#657786">@{{result.screen_name}}</font>
+              {{receipt.name}} <br> 
+              <a href="https://www.twitter.com/{{receipt.screen_name}}">
+                <font color="#657786">@{{receipt.screen_name}}</font>
               </a>
             </td>
-            <td class="censor">{{result.contents_text}}</td>
-            <td><a href="{{result.url}}">{{result.date_of_tweet}}</a></td>
-            <td>{{result.blocklist_id}}</td>
+            <td class="censor">{{receipt.contents_text}}</td>
+            <td><a href="{{receipt.url}}">{{receipt.date_of_tweet}}</a></td>
+            <td>{{receipt.blocklist_id}}</td>
           </tr>
         {% endfor %}
       </tbody>
