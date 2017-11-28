@@ -28,14 +28,17 @@ h1{
     <div class="w3-bar charcoal">
         <a href="/" class="w3-bar-item hover-subtle w3-button w3-mobile">Home</a>
         <a href="/receipts" class="w3-bar-item hover-subtle w3-button w3-mobile">Receipts</a>
-        {% if logged_in %}
-            <a href="/" class="w3-bar-item hover-subtle w3-button w3-mobile">Sturm</a>
-        {% endif %}
+        <!--{% if logged_in %}
+            <a href="/sturm" class="w3-bar-item hover-subtle w3-button w3-mobile">Sturm</a>
+        {% endif %}-->
         {% if show_approvals %}
             <a href="/approve" class="w3-bar-item hover-subtle w3-button w3-mobile">Approve</a>
         {% endif %}
         {% if logged_in %}
             <a href="/logout" class="w3-bar-item w3-right hover-subtle w3-button w3-mobile">Logout</a>
+        {% endif %}
+        {% if not logged_in %}
+            <a href="/login" class="w3-bar-item w3-right hover-subtle w3-button w3-mobile">Login</a>
         {% endif %}
     </div>
     <div class="w3-container">
