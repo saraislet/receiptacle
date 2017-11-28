@@ -23,11 +23,14 @@ def unshorten_urls_in_text(string):
     return re.sub(r'(https?://\S*)', unshorten_url_re, string)
 
 
-def remove_ats(tweet):
+def remove_leading_ats(tweet):
     # Remove any leading @s (e.g., replies) from a tweet.
     # Any @ that is not at the beginning of a tweet will be left.
-    # TODO: Separate into two methods, one removing leading @s and one removing all.
-    return re.sub(r'^(@\S+\s)*', "", tweet)
+    return re.sub(r'^(@[a-zA-Z0-9_]{1,15})', "", tweet)
+
+def remove_ats(tweet):
+    # Remove all @s (e.g., replies) from a tweet.
+    return re.sub(r'(@[a-zA-Z0-9_]{1,15})', "", tweet)
 
 
 def get_twitter_urls(text):
