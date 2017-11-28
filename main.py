@@ -18,7 +18,12 @@ consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
 
 
-@app.route('/')
+@app.route("/")
+def start():
+    # TODO: Write a start page describing purpose and basic philosophy.
+    return redirect("/receipts", code=302)
+
+@app.route('/login')
 def send_token():
     return sign_in.send_token()
 
@@ -78,19 +83,14 @@ def search_user(user_searched):
     return crud.search_receipts_for_user(user_searched)
     
 
-@app.route('/main')
-def main():
+@app.route('/sturm')
+def sturm():
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(session['key'], session['secret'])
-    
-    # This is used for testing, and may be removed later.
-    userdata_json = session['userdata']
-    
+    auth.set_access_token(session['key'], session['secret'])    
         
-    return render_template('app.html', 
-                                 logged_in = True,
-                                 name = userdata_json['name'],
-                                 followers_count = userdata_json['followers_count'])
+    return render_template('app.html',
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 @app.route('/logout')
 def logout():

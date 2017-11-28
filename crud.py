@@ -57,7 +57,7 @@ def get_approvals(approval_msg=""):
         elif 'user_id' in session:
             blocklist_ids = check_admins(session['user_id'], connection)
         else:
-            return redirect("/", code=302)
+            return redirect("/login", code=302)
         
         with connection.cursor() as cursor:
             # Fetch the most recent 20 records that are not approved
@@ -93,9 +93,9 @@ def get_approvals(approval_msg=""):
     else:
         results.show_approval_msg = False
     
-    return render_template('approvals.html', results = results, 
-                             logged_in = session['logged_in'],
-                             show_approvals = session['show_approvals'])
+    return render_template('approvals.html', results = results,
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 
 def post_approvals(approved_ids=[]):
@@ -126,7 +126,9 @@ def post_approvals(approved_ids=[]):
     except BaseException as e:
         show_error = True
         print("Error in approve_receipts():", e) 
-        return render_template('error.html', error_msg = e, show_error = show_error)
+        return render_template('error.html', error_msg = e, show_error = show_error,
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 
 def get_receipts():
@@ -157,15 +159,10 @@ def get_receipts():
         results.show_results = True
     else:
         results.show_results = False
-        
-    if 'logged_in' in session:
-        results.logged_in = True
-        if session['blocklist_ids'] is not []:
-            results.show_approvals = True
     
     return render_template('results_table.html', results=results,
-                           logged_in = results.logged_in,
-                           show_approvals = results.show_approvals)
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 
 def get_receipts_json():
@@ -202,7 +199,9 @@ def get_receipts_json():
                 
     except BaseException as e:
         print("Error in receipts_json():", e)   
-        return render_template('error.html', error_msg = e)
+        return render_template('error.html', error_msg = e,
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 
 def search_receipts_for_user(user_searched):
@@ -241,7 +240,7 @@ def search_receipts_for_user(user_searched):
                     print("User searched is in the database.")
                     
         except BaseException as e:
-            print("Error in search_user():", e)
+            print("Error in search_receipts_for_user():", e)
             results.error_msg = e
             results.show_error = True
 
@@ -270,8 +269,8 @@ def search_receipts_for_user(user_searched):
         results.show_results = True
     
     return render_template('results_table.html', results = results,
-                           logged_in = results.logged_in,
-                           show_approvals = results.show_approvals)
+                             logged_in = session.get('logged_in', False),
+                             show_approvals = session.get('show_approvals', False))
 
 
 class Results(object):
