@@ -66,13 +66,7 @@ def get_approvals(approval_msg=""):
             sql += " AND `blocklist_id` in %s"
             sql += " ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql, (tuple(blocklist_ids),))
-            results.receipts.extend(cursor.fetchall())
-            
-            # If a matching record exists, return result, otherwise return message.
-            if len(results.receipts) == 0:
-                print("Approval results array is empty. Something went wrong.")
-            else:
-                print("Returning approval receipts in array.")
+            results.extend(cursor.fetchall())
                 
     except BaseException as e:
         results.show_error = True
@@ -85,8 +79,10 @@ def get_approvals(approval_msg=""):
     # Don't show list of results if there aren't any.
     if len(results.receipts) > 0:
         results.show_results = True
+        print("Returning approval receipts in array.")
     else:
         results.show_results = False
+        print("Approval results array is empty. Something went wrong.")
         
     if approval_msg is not "":
         results.show_approval_msg = True
@@ -148,7 +144,7 @@ def get_receipts():
             if receipts is None:
                 print("Results array is empty. Something went wrong.")
             else:
-                results.receipts = receipts
+                results.set(receipts)
                 print("Returning receipts in array.")
                 
     except BaseException as e:
@@ -236,7 +232,7 @@ def search_receipts_for_user(user_searched):
                     results.error_msg = "User searched is not in the database."
                     print(results.error_msg)
                 else:
-                    results.receipts = receipts
+                    results.set(receipts)
                     print("User searched is in the database.")
                     
         except BaseException as e:
@@ -254,19 +250,22 @@ def search_receipts_for_user(user_searched):
                 sql = select_columns_from_receipts 
                 sql += " WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql,)
-                results.receipts = cursor.fetchall()
+                receipts = cursor.fetchall()
                 print("Displaying most recent 20 receipts.")
+                
+                # If a matching record exists, return result, otherwise return message.
+                if receipts is None:
+                    results.show_results = False
+                    print("Results array is empty. Something went wrong.")
+                else:
+                    results.show_results = True
+                    results.set(receipts)
+                    print("Returning receipts in array.")
                     
         except BaseException as e:
             print("Error in search_receipts_for_user():", e)
             results.error_msg = e
             results.show_error = True
-    
-    # Don't show list of results if there aren't any.
-    if results.receipts is None or results.num_receipts == 0:
-        results.show_results = False
-    else:
-        results.show_results = True
     
     return render_template('results_table.html', results = results,
                              logged_in = session.get('logged_in', False),
@@ -286,7 +285,7 @@ class Results(object):
     def __init__(self, receipts):
         # Create a Results object with receipts array and default values for attributes.
         self.receipts = receipts
-        self.num_receipts = len(receipts)
+        self.num_receipts = len(self.receipts)
         self.show_approvals = False
         self.show_error = False
         self.show_results = False
@@ -294,3 +293,11 @@ class Results(object):
         self.approval_msg = ""
         self.error_msg = ""
         self.logged_in = False
+        
+    def set(self, receipts):
+        self.receipts = receipts
+        self.num_receipts = len(self.receipts)
+
+    def extend(self, receipts):
+        self.receipts.extend(receipts)
+        self.num_receipts = len(self.receipts)
