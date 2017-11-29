@@ -229,9 +229,11 @@ def search_receipts_for_user(user_searched):
                 # If a matching record exists, return result, otherwise return message.
                 if receipts == None:
                     results.show_error = True
+                    results.show_results = False
                     results.error_msg = "User searched is not in the database."
                     print(results.error_msg)
                 else:
+                    results.show_results = True
                     results.set(receipts)
                     print("User searched is in the database.")
                     
@@ -268,8 +270,9 @@ def search_receipts_for_user(user_searched):
             results.show_error = True
     
     return render_template('results_table.html', results = results,
-                             logged_in = session.get('logged_in', False),
-                             show_approvals = session.get('show_approvals', False))
+                           username = username,
+                           logged_in = session.get('logged_in', False),
+                           show_approvals = session.get('show_approvals', False))
 
 
 class Results(object):
