@@ -11,29 +11,29 @@ Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
 
 ## File structure
 
-.
-│   crud.py                  # CRUD methods
-│   main.py                  # Flask routes
-│   parsing.py               # mostly regex for parsing inputs and tweets
-│   Procfile                 # defines run command for Heroku
-│   requirements.txt         # defines requirements for Heroku
-│   runtime.txt              # defines Python version for Heroku
-│   sign_in.py               # Twitter OAuth methods
-│   Sturmtest.py             # old test version of Nazi classification engine
-│   test_parsing.py          # unit tests
-│   utils.py                 # basic utility methods (db_connect() and get_api())
-│
-├───static
-│   └───css
-│           main.css
-│
-├───templates
-│       app.html             # Nazi classification UI from Sturmjäger
-│       approvals.html       # For approving receipts (logged in blocklist admins only)
-│       error.html           # Generic error page
-│       layout.html          # Template (includes header & footer)
-│       results_table.html   # displays receipts or search results
-│       start.html           # login page
+    .
+    ├── crud.py                  # CRUD methods
+    ├── main.py                  # Flask routes
+    ├── parsing.py               # mostly regex for parsing inputs and tweets
+    ├── Procfile                 # defines run command for Heroku
+    ├── requirements.txt         # defines requirements for Heroku
+    ├── runtime.txt              # defines Python version for Heroku
+    ├── sign_in.py               # Twitter OAuth methods
+    ├── Sturmtest.py             # old test version of Nazi classification engine
+    ├── test_parsing.py          # unit tests
+    ├── utils.py                 # basic utility methods (db_connect() and get_api())
+    │
+    ├── static
+    │   └── css
+    │       └── main.css
+    │
+    └── templates
+        ├── app.html             # Nazi classification UI from Sturmjäger
+        ├── approvals.html       # For approving receipts (logged in blocklist admins only)
+        ├── error.html           # Generic error page
+        ├── layout.html          # Template (includes header & footer)
+        ├── results_table.html   # displays receipts or search results
+        └── start.html           # login page
 
 ## TODO:
 * Plan additional features for CRUD MVP
