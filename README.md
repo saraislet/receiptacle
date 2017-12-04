@@ -11,6 +11,7 @@ Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
 
 ## File structure
 
+.
 │   crud.py                  # CRUD methods
 │   main.py                  # Flask routes
 │   parsing.py               # mostly regex for parsing inputs and tweets
