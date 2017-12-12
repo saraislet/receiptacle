@@ -66,10 +66,10 @@ def receipts_json():
     return crud.get_receipts_json()
 
 
-@app.route("/search/<string:name>/")
-def search_user_url(name):
-    print("Searching for user @" + name)
-    return search_user(name)
+@app.route("/search/<string:user_searched>/")
+def search_user_url(user_searched):
+    print("Searching for user @" + user_searched)
+    return search_user(user_searched)
 
 
 @app.route('/search', methods=['POST'])
