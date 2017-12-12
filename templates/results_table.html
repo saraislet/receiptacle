@@ -16,7 +16,11 @@
 
   {% if results.show_search_name %}
     <p>Searched for @{{username}}:</p>
-    <p>Displaying {{results.num_receipts}} receipts.</p>
+    {% if results.num_receipts == 1 %}
+      <p>Displaying 1 receipt.</p>
+    {% elif results.num_receipts > 1 %}
+      <p>Displaying {{results.num_receipts}} receipts.</p>
+    {% endif %}
   {% endif %}
   {% if results.show_error %}
     <p class="error">{{results.error_msg}}</p>
