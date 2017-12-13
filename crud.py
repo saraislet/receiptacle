@@ -42,7 +42,7 @@ def check_admins(user_id, connection):
         return []
     
 
-def get_approvals(approval_msg="", args):
+def get_approvals(approval_msg="", args={}):
     # Get the most recent 20 approvals.
     
     connection = utils.db_connect()
@@ -206,7 +206,7 @@ def search_receipts_for_user(user_searched, args):
     results = Results([])
     connection = utils.db_connect()
     
-    show_all = args.get('show_all', 'False')
+    show_all = args.get('show_all', 'False').lower()
     
     username = user_searched
     
@@ -226,16 +226,15 @@ def search_receipts_for_user(user_searched, args):
                 sql += " WHERE `screen_name`=%s"
                 
                 # Only show all receipts if that request parameter is True
-                if show_all is not "True":
+                if show_all != "true":
                     sql += " AND `approved_by_id` IS NOT NULL"
-                    print("show_all is \"" + str(show_all) + "\"")
                 
                 sql += " ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql, (username,))
                 receipts = cursor.fetchall()
     
                 # If a matching record exists, return result, otherwise return message.
-                if receipts == None:
+                if receipts == None or receipts == ():
                     results.show_error = True
                     results.show_results = False
                     results.error_msg = "User searched is not in the database."
