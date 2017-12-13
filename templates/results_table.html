@@ -47,7 +47,7 @@
               </a>
             </td>
             <td class="censor">{{receipt.contents_text}}</td>
-            <td><a href="{{receipt.url}}">{{receipt.date_of_tweet}}</a></td>
+            <td><a href="https://www.twitter.com/{{receipt.screen_name}}/status/{{receipt.status_id}}">{{receipt.date_of_tweet}}</a></td>
             <td>{{receipt.blocklist_name}}</td>
           </tr>
         {% endfor %}
