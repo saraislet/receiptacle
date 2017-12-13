@@ -48,18 +48,24 @@ def get_verification():
     try:
         auth.get_access_token(verifier)
         api = tweepy.API(auth)
+        connection = utils.db_connect()
+        
+        twitter_id = api.me().id
+        
+        crud.check_account(twitter_id, connection, api, auth.access_token, auth.access_token_secret)
         
         # Store key and secret in session.
         # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
         session['key'] = auth.access_token
         session['secret'] = auth.access_token_secret
         session['logged_in'] = True
-        session['user_id'] = api.me().id
-        session['blocklist_ids'] = crud.check_admins(session['user_id'], utils.db_connect())
+        session['user_id'] = twitter_id
+        session['blocklist_ids'] = crud.check_admins(session['user_id'], connection)
+        
+        
         
         if session['blocklist_ids'] is not []:
             session['show_approvals'] = True
-
         
         return redirect("/receipts", code=302)
         
@@ -70,5 +76,8 @@ def get_verification():
         return render_template('error.html', error_msg = error_msg)
     
     except BaseException as e:
-        print("Error in receipts():", e)
+        print("Error in get_verification():", e)
         return render_template('error.html', error_msg = error_msg)
+    
+    finally:
+        connection.close()

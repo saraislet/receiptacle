@@ -10,8 +10,7 @@ import re, requests
 
 def unshorten_url_re(url):
     # Return expanded URL from regex matches.
-    # Unclear how to combine this with previous function nontrivially.
-    # This works for now.
+    # Improve these methods laater. This works for now.
     if url == None:
         return None
     else:
@@ -27,6 +26,7 @@ def remove_leading_ats(tweet):
     # Remove any leading @s (e.g., replies) from a tweet.
     # Any @ that is not at the beginning of a tweet will be left.
     return re.sub(r'^(@[a-zA-Z0-9_]{1,15})', "", tweet)
+
 
 def remove_ats(tweet):
     # Remove all @s (e.g., replies) from a tweet.

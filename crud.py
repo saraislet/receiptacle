@@ -8,7 +8,7 @@ Created on Thu Nov  9 18:59:22 2017
 #import tweepy
 #import pymysql.cursors
 
-import json
+import json, datetime
 from flask import redirect, render_template, session
 import parsing, utils
 
@@ -23,7 +23,8 @@ def check_admins(user_id, connection):
     
     try:        
         with connection.cursor() as cursor:
-            sql = "SELECT blocklist_id FROM `blocklist_admins` WHERE `admin_id`=%s"
+            sql = "SELECT blocklist_id FROM `blocklist_admins`"
+            sql += " WHERE `admin_id`=%s"
             cursor.execute(sql, (user_id,))
             blocklist_ids = cursor.fetchall()
             
@@ -40,6 +41,91 @@ def check_admins(user_id, connection):
     except BaseException as e:
         print("Error in check_admins():", e)
         return []
+    
+
+def check_user(twitter_id, connection, api, key, secret):
+    # Test if user is in the database ,then insert or update if necessary.    
+    try:    
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT `twitter_id` FROM `users`"
+            sql += " WHERE `twitter_id`=%s LIMIT 1"
+            cursor.execute(sql, (twitter_id,))
+            result = cursor.fetchone()
+            
+            # If a matching record exists, return true, otherwise return false.
+            if result == None:
+                print("User is not in the database. Inserting new row.")
+                insert_user(twitter_id, connection, api, key, secret)
+            else:
+                print("User is in the database. Checking for updates.")
+                update_user(twitter_id, connection, api, key, secret)
+            return
+                
+    except BaseException as e:
+        print("Error in check_user()", e)
+        return
+
+
+def insert_user(twitter_id, connection, api, key, secret):
+    # Pull user details from API and insert into users table.
+    userdata = api.get_user(twitter_id)
+    name = userdata.name
+    screen_name = userdata.screen_name
+    
+    try:
+        with connection.cursor() as cursor:
+            # Create a new record in users table
+            sql = "INSERT INTO `users`"
+            sql += " (`twitter_id`, `name`, `screen_name`, `oauth_key`,"
+            sql += " `oauth_secret`, `date_updated`) VALUES (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (twitter_id, name, screen_name, key, secret, datetime.datetime.now(),))
+        
+            # Commit to save changes
+            connection.commit()
+    
+            print("Successfully inserted @" + screen_name + " into users table.")
+            return
+
+    except BaseException as e:
+        print("Error in insert_user()", e)
+        return
+
+def update_user(twitter_id, connection, api, key, secret):
+    # Test if user should be updated, and update if necessary.
+    try:
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT `date_updated` FROM `users`"
+            sql += " WHERE `twitter_id`=%s LIMIT 1"
+            cursor.execute(sql, (twitter_id,))
+            result = cursor.fetchone()
+            date_updated = result['date_updated']
+            
+            # If difference between now() and date_updated is more than 1 day, update
+            if (datetime.datetime.now().timestamp() - date_updated.timestamp())/60/60/24 > 1:
+                print("User is out of date. Updating user.")
+                userdata = api.get_user(twitter_id)
+                name = userdata.name
+                screen_name = userdata.screen_name
+                
+                with connection.cursor() as cursor:
+                    # Update a record in users table
+                    sql = "UPDATE `users` WHERE `twitter_id`=%s LIMIT 1"
+                    sql += " SET `name`=%s, `screen_name`=%s,"
+                    sql += " `oauth_key`=%s, `oauth_secret`=%s, `date_updated`=%s"
+                    cursor.execute(sql, (twitter_id, name, screen_name, key, secret, datetime.datetime.now(),))
+                    print("Successfully updated @" + screen_name + " from users table.")
+        
+                # Commit to save changes
+                connection.commit()
+            else:
+                print("User is up to date.")
+        return
+    
+    except BaseException as e:
+        print("Error in update_user()", e)
+        return
     
 
 def get_approvals(approval_msg="", args={}):
@@ -172,7 +258,8 @@ def get_receipts_json(args):
         
         with connection.cursor() as cursor:
             # Read 20 records.
-            sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
+            sql = "SELECT * FROM `receipts` WHERE `approved_by_id` IS NOT NULL"
+            sql += " ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql,)
             receipts = cursor.fetchall()
             
