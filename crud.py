@@ -43,7 +43,7 @@ def check_admins(user_id, connection):
         return []
     
 
-def check_user(twitter_id, connection, api, key, secret):
+def check_user(twitter_id, connection, api, key="", secret=""):
     # Test if user is in the database ,then insert or update if necessary.    
     try:    
         with connection.cursor() as cursor:

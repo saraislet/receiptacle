@@ -24,7 +24,7 @@ def send_token():
 
     try: 
         #get the request tokens
-        redirect_url= auth.get_authorization_url()
+        redirect_url = auth.get_authorization_url()
         session['request_token'] = auth.request_token
         
         return render_template('start.html', redirect_url = redirect_url)
@@ -37,13 +37,23 @@ def send_token():
     
 def get_verification():
     # Get the verifier key from the request url.
-    verifier = request.args['oauth_verifier']
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    token = session['request_token']
-    del session['request_token']
-
-    auth.request_token = token
+    try:
+        verifier = request.args['oauth_verifier']
+    
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        token = session['request_token']
+        del session['request_token']
+    
+        auth.request_token = token
+        
+    except KeyError as e:
+        print("KeyError setting up get_verification(): ", e)
+        return render_template('error.html', error_msg = e)
+    
+    except BaseException as e:
+        print("Error in get_verification():", e)
+        return render_template('error.html', error_msg = e)
+        
 
     try:
         auth.get_access_token(verifier)
@@ -52,7 +62,7 @@ def get_verification():
         
         twitter_id = api.me().id
         
-        crud.check_account(twitter_id, connection, api, auth.access_token, auth.access_token_secret)
+        crud.check_user(twitter_id, connection, api, key=auth.access_token, secret=auth.access_token_secret)
         
         # Store key and secret in session.
         # get_api() rebuilds OAuthHandler and returns tweepy.API(auth)
@@ -61,8 +71,6 @@ def get_verification():
         session['logged_in'] = True
         session['user_id'] = twitter_id
         session['blocklist_ids'] = crud.check_admins(session['user_id'], connection)
-        
-        
         
         if session['blocklist_ids'] is not []:
             session['show_approvals'] = True
@@ -77,7 +85,7 @@ def get_verification():
     
     except BaseException as e:
         print("Error in get_verification():", e)
-        return render_template('error.html', error_msg = error_msg)
+        return render_template('error.html', error_msg = e)
     
     finally:
         connection.close()
