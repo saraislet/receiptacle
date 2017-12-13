@@ -40,7 +40,6 @@ Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
 * Build more unit tests.
   * Mock post and get requests.
 * Build demo mode.
-* Join SQL queries on accounts table to pull account data.
 * Construct tweet URL from status_id and screen_name.
 * Create route to single receipt by ID.
 * Create route to all receipts by the logged-in user (if not logged-in, redirect to login page).

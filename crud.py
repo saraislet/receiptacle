@@ -12,10 +12,13 @@ import json, datetime
 from flask import redirect, render_template, session
 import parsing, utils
 
-select_columns_from_receipts = "SELECT id, twitter_id, blocklist_id"
-select_columns_from_receipts += ", contents_text, url, screen_name, name"
+select_columns_from_receipts = "SELECT id, receipts.twitter_id, blocklist_id"
+select_columns_from_receipts += ", contents_text, url, status_id"
+select_columns_from_receipts += ", receipts.screen_name, receipts.name"
 select_columns_from_receipts += ", date_of_tweet"
+select_columns_from_receipts += ", users.screen_name AS blocklist_name"
 select_columns_from_receipts += " FROM `receipts`"
+select_columns_from_receipts += " LEFT JOIN users ON receipts.blocklist_id = users.twitter_id"
 
 
 def check_admins(user_id, connection):
@@ -222,7 +225,8 @@ def get_receipts(args):
         with connection.cursor() as cursor:
             # Fetch the most recent 20 records that are approved
             sql = select_columns_from_receipts
-            sql += " WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
+            sql += " WHERE `approved_by_id` IS NOT NULL"
+            sql += " ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql,)
             receipts = cursor.fetchall()
             
@@ -237,7 +241,7 @@ def get_receipts(args):
         print("Error in get_receipts():", e)    
     
     # Don't show list of results if there aren't any.
-    if len(receipts) > 0:
+    if results.num_receipts > 0:
         results.show_results = True
     else:
         results.show_results = False
