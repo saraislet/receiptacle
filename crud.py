@@ -12,13 +12,14 @@ import json, datetime
 from flask import redirect, render_template, session
 import parsing, utils
 
-select_columns_from_receipts = "SELECT id, receipts.twitter_id, blocklist_id"
-select_columns_from_receipts += ", contents_text, url, status_id"
+select_columns_from_receipts = "SELECT receipts.id, receipts.twitter_id, receipts.blocklist_id"
+select_columns_from_receipts += ", contents_text, url, receipts.status_id"
 select_columns_from_receipts += ", receipts.screen_name, receipts.name"
 select_columns_from_receipts += ", date_of_tweet"
 select_columns_from_receipts += ", users.screen_name AS blocklist_name"
 select_columns_from_receipts += " FROM `receipts`"
-select_columns_from_receipts += " LEFT JOIN users ON receipts.blocklist_id = users.twitter_id"
+select_columns_from_receipts += " LEFT JOIN receipt_logs ON receipts.status_id = receipt_logs.status_id"
+select_columns_from_receipts += " LEFT JOIN users ON receipt_logs.blocklist_id = users.twitter_id"
 
 
 def check_admins(user_id, connection):
@@ -152,7 +153,7 @@ def get_approvals(approval_msg="", args={}):
             # Fetch the most recent 20 records that are not approved
             sql = select_columns_from_receipts
             sql += " WHERE `approved_by_id` IS NULL"
-            sql += " AND `blocklist_id` in %s"
+            sql += " AND receipts.blocklist_id in %s"
             sql += " ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql, (tuple(blocklist_ids),))
             results.extend(cursor.fetchall())
