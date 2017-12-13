@@ -12,8 +12,8 @@ import json, datetime
 from flask import redirect, render_template, session
 import parsing, utils
 
-select_columns_from_receipts = "SELECT receipts.id, receipts.twitter_id, receipts.blocklist_id"
-select_columns_from_receipts += ", contents_text, url, receipts.status_id"
+select_columns_from_receipts = "SELECT receipts.id, receipts.twitter_id"
+select_columns_from_receipts += ", contents_text, receipts.status_id"
 select_columns_from_receipts += ", receipts.screen_name, receipts.name"
 select_columns_from_receipts += ", date_of_tweet"
 select_columns_from_receipts += ", users.screen_name AS blocklist_name"
@@ -153,7 +153,7 @@ def get_approvals(approval_msg="", args={}):
             # Fetch the most recent 20 records that are not approved
             sql = select_columns_from_receipts
             sql += " WHERE `approved_by_id` IS NULL"
-            sql += " AND receipts.blocklist_id in %s"
+            sql += " AND receipt_logs.blocklist_id in %s"
             sql += " ORDER BY `id` DESC LIMIT 20"
             cursor.execute(sql, (tuple(blocklist_ids),))
             results.extend(cursor.fetchall())
