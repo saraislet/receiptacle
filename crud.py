@@ -314,7 +314,7 @@ def search_receipts_for_user(user_searched, args):
                 #   update from Twitter if necessary,
                 #   and search receipts table for twitter_id.
                 sql = select_columns_from_receipts
-                sql += " WHERE `receipts.screen_name`=%s"
+                sql += " WHERE receipts.screen_name=%s"
                 
                 # Only show all receipts if that request parameter is True
                 if show_all != "true":
@@ -348,7 +348,7 @@ def search_receipts_for_user(user_searched, args):
             with connection.cursor() as cursor:
                 # Read 20 records
                 sql = select_columns_from_receipts 
-                sql += " WHERE `approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
+                sql += " WHERE `receipts.approved_by_id` IS NOT NULL ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql,)
                 receipts = cursor.fetchall()
                 print("Displaying most recent 20 receipts.")
