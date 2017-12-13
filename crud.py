@@ -42,7 +42,7 @@ def check_admins(user_id, connection):
         return []
     
 
-def get_approvals(approval_msg=""):
+def get_approvals(approval_msg="", args):
     # Get the most recent 20 approvals.
     
     connection = utils.db_connect()
@@ -117,7 +117,7 @@ def post_approvals(approved_ids=[]):
         elif num_approvals > 1:
             approval_msg = str(num_approvals) + " receipts approved."
             
-        return get_approvals(approval_msg)
+        return get_approvals(approval_msg, {})
     
     except BaseException as e:
         show_error = True
@@ -127,7 +127,7 @@ def post_approvals(approved_ids=[]):
                              show_approvals = session.get('show_approvals', False))
 
 
-def get_receipts():
+def get_receipts(args):
     # Return the most recent 20 approved receipts.
     connection = utils.db_connect()
     results = Results([])
@@ -161,7 +161,7 @@ def get_receipts():
                              show_approvals = session.get('show_approvals', False))
 
 
-def get_receipts_json():
+def get_receipts_json(args):
     # Return most recent 20 records in JSON.
     # This method exists to test the React UI.
     
@@ -200,11 +200,13 @@ def get_receipts_json():
                              show_approvals = session.get('show_approvals', False))
 
 
-def search_receipts_for_user(user_searched):
+def search_receipts_for_user(user_searched, args):
     # Return most recent 20 receipts matching user_searched.
     # Retrieve up to $count records for username.
     results = Results([])
     connection = utils.db_connect()
+    
+    show_all = args.get('show_all', 'False')
     
     username = user_searched
     
@@ -221,7 +223,13 @@ def search_receipts_for_user(user_searched):
                 #   update from Twitter if necessary,
                 #   and search receipts table for twitter_id.
                 sql = select_columns_from_receipts
-                sql += " WHERE `screen_name`=%s AND `approved_by_id` IS NOT NULL"
+                sql += " WHERE `screen_name`=%s"
+                
+                # Only show all receipts if that request parameter is True
+                if show_all is not "True":
+                    sql += " AND `approved_by_id` IS NOT NULL"
+                    print("show_all is \"" + str(show_all) + "\"")
+                
                 sql += " ORDER BY `id` DESC LIMIT 20"
                 cursor.execute(sql, (username,))
                 receipts = cursor.fetchall()

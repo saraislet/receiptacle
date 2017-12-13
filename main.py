@@ -58,37 +58,41 @@ def approve_receipts():
 
 @app.route("/receipts")
 def receipts():
-    return crud.get_receipts()
+    args = request.args
+    return crud.get_receipts(args)
         
 
 @app.route("/receipts_json")
 def receipts_json():
-    return crud.get_receipts_json()
+    args = request.args
+    return crud.get_receipts_json(args)
 
 
 @app.route("/search/<string:user_searched>/")
 def search_user_url(user_searched):
+    args = request.args
     print("Searching for user @" + user_searched)
-    return search_user(user_searched)
+    return search_user(user_searched, args)
 
 
 @app.route('/search', methods=['POST'])
 def search_user_form():
     user_searched = request.form['search_user']
+    args = request.args
     print("Searching for user @" + user_searched)
-    return search_user(user_searched)
+    return search_user(user_searched, args)
 
 
-def search_user(user_searched):
-    return crud.search_receipts_for_user(user_searched)
+def search_user(user_searched, args):
+    return crud.search_receipts_for_user(user_searched, args)
     
 
 @app.route('/sturm')
-def sturm():
+def sturm():    
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(session['key'], session['secret'])    
         
-    return render_template('app.html',
+    return render_template('app.html', 
                              logged_in = session.get('logged_in', False),
                              show_approvals = session.get('show_approvals', False))
 
