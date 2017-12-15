@@ -22,6 +22,8 @@
     <p class="note">{{results.approval_msg}}</p>
   {% endif %}
   {% if results.show_results %}
+  <input id="censorCheckBox" value="Censor text?" checked="checked" type="checkbox">
+  <label for="censorCheckBox">Censor text?</label>
   <form action="/approve" method="POST" class="w3-container">
     <input type="submit" name="approve_button" value="Approve" class="w3-btn cobalt w3-margin"/>
   
@@ -47,7 +49,7 @@
                   <font color="#657786">@{{receipt.screen_name}}</font>
                 </a>
               </td>
-              <td class="censor">{{receipt.contents_text}}</td>
+              <td class="contents censor">{{receipt.contents_text}}</td>
               <td><a href="{{receipt.url}}">{{receipt.date_of_tweet}}</a></td>
               <td>{{receipt.blocklist_name}}</td>
             </tr>

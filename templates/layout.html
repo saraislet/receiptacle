@@ -3,6 +3,7 @@
     <title>Receiptacle</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
     <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='css/main.css') }}">
+    <script src="{{ url_for('static',filename='js/classToggle.js') }}"></script>
     <!-- colors: 5555BB, 38387B, 1B1B3B -->
     <!-- greys: D1C1E1, 968BA1, 4F4955, 37333B -->
     <!-- contrast colors: 448830, 3C6E2D, A854EE, BB56B3 -->
@@ -24,7 +25,7 @@ h1{
 </style>
  
 </head>
-<body>
+<body onload="onLoad()">
     <div class="w3-bar charcoal">
         <a href="/" class="w3-bar-item hover-subtle w3-button w3-mobile">Home</a>
         <a href="/receipts" class="w3-bar-item hover-subtle w3-button w3-mobile">Receipts</a>
