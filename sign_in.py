@@ -14,7 +14,8 @@ consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
 
 #hostname = 'http://127.0.0.1:5000'
-hostname = 'https://young-meadow-72614.herokuapp.com'
+#hostname = 'https://young-meadow-72614.herokuapp.com'
+hostname = 'https://www.receiptacle.com'
 callback_url = hostname + '/verify'
 
 
