@@ -44,6 +44,7 @@ Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
 * Create route to all receipts by the logged-in user (if not logged-in, redirect to login page).
 * Configure and test digitalocean droplet.
 * Block approved receipts.
+* Launch production heroku node.
 
 ### NaziBlockBot todo:
 * Handle errors gracefully.
