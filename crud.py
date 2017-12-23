@@ -149,19 +149,20 @@ def get_approvals(approval_msg="", args={}):
         else:
             return redirect("/login", code=302)
         
-        with connection.cursor() as cursor:
-            # Fetch the most recent 20 records that are not approved
-            sql = select_columns_from_receipts
-            sql += " WHERE `approved_by_id` IS NULL"
-            sql += " AND receipt_logs.blocklist_id in %s"
-            sql += " ORDER BY `id` DESC LIMIT 20"
-            cursor.execute(sql, (tuple(blocklist_ids),))
-            results.extend(cursor.fetchall())
+        if blocklist_ids != []:
+            with connection.cursor() as cursor:
+                # Fetch the most recent 20 records that are not approved
+                sql = select_columns_from_receipts
+                sql += " WHERE `approved_by_id` IS NULL"
+                sql += " AND receipt_logs.blocklist_id in %s"
+                sql += " ORDER BY `id` DESC LIMIT 20"
+                cursor.execute(sql, (tuple(blocklist_ids),))
+                results.extend(cursor.fetchall())
                 
     except BaseException as e:
         results.show_error = True
         results.error_msg = e
-        print("Error in approve():", e)  
+        print("Error in get_approvals():", e)  
     
     finally:
         connection.close()

@@ -21,6 +21,9 @@
   {% if results.show_approval_msg %}
     <p class="note">{{results.approval_msg}}</p>
   {% endif %}
+  {% if results.num_receipts == 0 %}
+    <p class="error">There are no approvals for blocklists you administrate.</p>
+  {% endif %}
   {% if results.show_results %}
   <input id="censorCheckBox" value="Censor text?" checked="checked" type="checkbox">
   <label for="censorCheckBox">Censor text?</label>
