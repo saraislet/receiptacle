@@ -7,7 +7,7 @@ I want to make accountable blocklists easy by allowing users to look up evidence
 One simple application of this receipts database would be allowing users to DM a bot to have the bot block the indicated user and store the indicated tweet as a receipt for why that user was blocked. Any blocklist could take advantage of such a tool.
 
 ## Prototype
-Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
+Testing live prototype of back-end at https://www.receiptacle.org
 
 ## File structure
 
@@ -43,8 +43,9 @@ Testing live prototype of back-end at https://young-meadow-72614.herokuapp.com
 * Create route to single receipt by ID.
 * Create route to all receipts by the logged-in user (if not logged-in, redirect to login page).
 * Configure and test digitalocean droplet.
-* Block approved receipts.
-* Launch production heroku node.
+* (X) Block approved receipts.
+  * (Test this)
+* Launch MVP and separate staging dev node.
 
 ### NaziBlockBot todo:
 * Handle errors gracefully.
