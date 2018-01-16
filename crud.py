@@ -192,7 +192,16 @@ def post_approvals(approved_ids=[]):
         print("Approving receipts: " + str(approved_ids))
         
         connection = utils.db_connect()
+        
+        #api = utils.get_user_api(blocklist_id)
+        
         with connection.cursor() as cursor:
+            # Select the rows indicated by approved_ids
+            
+            
+            
+            
+            
             # Update records in receipts table
             for approved_id in approved_ids:
                 sql = "UPDATE `receipts` SET `approved_by_id`=%s WHERE `id`=%s"
