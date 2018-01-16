@@ -40,6 +40,34 @@ def get_api():
         auth.set_access_token(session['key'], session['secret'])
         return tweepy.API(auth)
     except tweepy.TweepError:
-        print('Error! Failed to build OAuthHandler!')
+        print('Error in get_api(): Failed to build OAuthHandler!')
+        raise OSError("Cannot connect to Twitter API.")
+        return
+
+
+def get_user_api(twitter_id):
+    # Rebuild OAuthHandler and return tweepy.API(auth) if session exists.
+    # Otherwise, return error_msg.
+    
+    try:
+        # Fetch key and secret
+        connection = db_connect()
+        
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT `screen_name`, `twitter_id`,"
+            sql += " `oauth_key`, `oauth_secret`"
+            sql += " FROM `users`"
+            sql += " WHERE twitter_id = %s"
+            cursor.execute(sql, (twitter_id,))
+            result = cursor.fetchone()
+        connection.close()
+        
+        # Build OAuthHandler
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(result['oauth_key'], result['oauth_secret'])
+        return tweepy.API(auth)
+    except tweepy.TweepError:
+        print('Error in get_user_api(): Failed to build OAuthHandler!')
         raise OSError("Cannot connect to Twitter API.")
         return
